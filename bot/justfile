@@ -1,0 +1,15 @@
+run:
+    deno run -A --env=.env --watch main.ts
+
+db-push:
+    deno run -A --env=.env npm:prisma generate
+    deno run -A --env=.env npm:prisma db push --force-reset
+
+db-up:
+    docker compose -f docker-compose.local-db.yml up -d
+
+db-down:
+    docker compose -f docker-compose.local-db.yml down
+
+db-logs:
+    docker compose -f docker-compose.local-db.yml logs -f

@@ -1,0 +1,10 @@
+# Akabot for Fluxer
+
+Here lies the development efforts for Akabot for Fluxer.
+
+## Directory structure
+
+- `bot` contains all bot code, and the web server for the API
+- `web` contains a Vite project with the web frontend.
+
+

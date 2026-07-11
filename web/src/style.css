@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+:root {
+    @apply dark:bg-gray-950 dark:text-white;
+}
