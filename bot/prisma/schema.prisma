@@ -13,6 +13,35 @@ datasource db {
   provider = "postgresql"
 }
 
+model WebTokens {
+  id      Int    @id @default(autoincrement())
+  guildId String
+  token   String
+}
+
+model IamRoles {
+  id      Int    @id @default(autoincrement())
+  guildId String
+  roleId  String
+  tag     String
+}
+
+model WelcomeGoodbyeSettings {
+  guildId                  String  @id
+  welcomeEnabled           Boolean
+  welcomeChannel           String
+  welcomeType              String
+  welcomeTitle             String
+  welcomeContent           String
+  welcomeFirstGracePeriod  Int
+  welcomeSecondGracePeriod Int
+  goodbyeEnabled           Boolean
+  goodbyeChannel           String
+  goodbyeType              String
+  goodbyeTitle             String
+  goodbyeContent           String
+}
+
 model WelcomeFirstGracePeriod {
   id        Int      @id @default(autoincrement())
   userId    String
@@ -26,17 +55,4 @@ model WelcomeSecondGracePeriod {
   guildId   String
   messageId String
   expiresAt DateTime
-}
-
-model WebTokens {
-  id      Int    @id @default(autoincrement())
-  guildId String
-  token   String
-}
-
-model IamRoles {
-  id      Int    @id @default(autoincrement())
-  guildId String
-  roleId  String
-  tag     String
 }

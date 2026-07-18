@@ -17,7 +17,6 @@ export async function authorizeRequest(req: Request): Promise<string | null> {
   if (token.length === 0) {
     // Cookies
     const cookies = getCookies(req.headers);
-    console.log(cookies);
     if (cookies && cookies.token) token = cookies.token;
   }
 
@@ -28,8 +27,6 @@ export async function authorizeRequest(req: Request): Promise<string | null> {
       token: token,
     },
   });
-
-  console.log(authorization);
 
   if (!authorization) return null;
   return authorization.guildId;

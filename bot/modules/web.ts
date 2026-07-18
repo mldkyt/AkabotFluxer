@@ -82,4 +82,27 @@ export async function webRequest(client: Client, req: Request, url: URL) {
       },
     );
   }
+
+  if (url.pathname === "/api/text-channels") {
+    const guildId = await authorizeRequest(req);
+    if (!guildId) return new Response("Unauthorized", { status: 401 });
+    const guild = client.guilds.get(guildId);
+    if (!guild) return new Response("Guild not found", { status: 404 });
+
+    const channels = guild.channels.filter((channel) => channel.type === 0).map((channel) => ({
+      id: channel.id,
+      name: channel.name,
+    }));
+
+    channels.reverse();
+
+    return new Response(
+      JSON.stringify(channels),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+  }
 }
