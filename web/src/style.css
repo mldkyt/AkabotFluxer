@@ -1,5 +1,6 @@
 @import "tailwindcss";
+@import "@heroui/styles";
 
 :root {
-    @apply dark:bg-gray-950 dark:text-white;
+    prefer-color-scheme: dark;
 }

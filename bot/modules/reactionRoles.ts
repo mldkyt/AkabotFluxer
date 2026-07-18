@@ -81,6 +81,10 @@ export async function webRequest(client: Client, req: Request, url: URL) {
         return new Response(`400 Bad Request`, { status: 400 });
       }
 
+      if (!/^[a-z0-9]$/.test(result.data.tag)) {
+        return new Response(`400 Bad Request`, { status: 400 });
+      }
+
       const iamRole = await prisma.iamRoles.create({
         data: {
           guildId,

@@ -27,6 +27,7 @@ export function setup(client: Client) {
 export async function webRequest(client: Client, req: Request, url: URL) {
   if (url.pathname === "/api/authorize" && req.method === "POST") {
     const body = await req.json();
+    console.log(body);
     const authorizeSchema = z.object({
       token: z.string().nonempty(),
     });
@@ -40,6 +41,7 @@ export async function webRequest(client: Client, req: Request, url: URL) {
     const webToken = await prisma.webTokens.findFirst({
       where: { token: safeBody.data.token },
     });
+    console.log(webToken);
     if (!webToken) return new Response("Invalid token", { status: 401 });
 
     const headers = new Headers({
@@ -55,7 +57,7 @@ export async function webRequest(client: Client, req: Request, url: URL) {
       sameSite: "Lax",
     });
 
-    return new Response(`204 No Content, Authorized`, { headers, status: 301 });
+    return new Response(`204 No Content, Authorized`, { headers, status: 200 });
   }
 
   if (url.pathname === "/api/roles") {

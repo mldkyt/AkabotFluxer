@@ -9,8 +9,6 @@ export async function authorizeRequest(req: Request): Promise<string | null> {
   if (authHeader) {
     if (authHeader.startsWith("Bearer ")) {
       token = authHeader.substring(7);
-    } else if (authHeader.startsWith("Token ")) {
-      token = authHeader.substring(6);
     } else {
       token = authHeader;
     }
