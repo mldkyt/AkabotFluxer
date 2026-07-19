@@ -69,7 +69,7 @@ const Main = () => {
       <div className="flex flex-col gap-2">
         <Select
           value={botChannel}
-          onChange={(x) => setBotChannel(x)}
+          onChange={(x) => setBotChannel(x?.toString() ?? "null")}
         >
           <Label>Bot Channel</Label>
           <Select.Trigger>

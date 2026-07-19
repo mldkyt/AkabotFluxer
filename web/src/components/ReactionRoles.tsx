@@ -53,6 +53,8 @@ const ReactionRoles = () => {
   }, []);
 
   const addNew = async () => {
+    if (!addNewRole) return;
+
     try {
       const res = await fetch("/api/iam-roles", {
         method: "POST",

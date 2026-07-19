@@ -3,6 +3,7 @@ import { authorizeRequest, generateToken } from "../src/web.ts";
 import z from "zod";
 import { prisma } from "../src/database.ts";
 import { setCookie } from "jsr:@std/http/cookie";
+import { serveDir, serveFile } from "jsr:@std/http/file-server";
 
 export function setup(client: Client) {
   client.on("messageCreate", async (msg: Message) => {
@@ -104,5 +105,24 @@ export async function webRequest(client: Client, req: Request, url: URL) {
         },
       },
     );
+  }
+
+  if (url.pathname === "/") {
+    return serveFile(req, "dist/index.html");
+  }
+
+  if (url.pathname === "/favicon.svg") {
+    return serveFile(req, "dist/favicon.svg");
+  }
+
+  if (url.pathname === "/icons.svg") {
+    return serveFile(req, "dist/icons.svg");
+  }
+
+  if (url.pathname.startsWith("/assets")) {
+    return serveDir(req, {
+      fsRoot: "dist/assets",
+      urlRoot: "assets",
+    });
   }
 }

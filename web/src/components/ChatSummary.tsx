@@ -186,7 +186,7 @@ const ChatSummary = () => {
 
       <Typography type="h2">Channels</Typography>
       <div className="flex flex-col gap-2">
-        <Select value={addChannelId} onChange={(x) => setAddChannelId(x.toString())}>
+        <Select value={addChannelId} onChange={(x) => setAddChannelId(x?.toString() ?? "")}>
           <Label>Channel</Label>
           <Select.Trigger>
             <Select.Value />

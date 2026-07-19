@@ -132,7 +132,7 @@ const WelcomeGoodbye = () => {
 
         {welcomeEnabled && (
           <>
-            <Select value={welcomeChannel} onChange={(x) => setWelcomeChannel(x.toString())}>
+            <Select value={welcomeChannel} onChange={(x) => setWelcomeChannel(x?.toString() ?? "")}>
               <Label>Welcome Channel</Label>
               <Select.Trigger>
                 <Select.Value />
@@ -150,7 +150,7 @@ const WelcomeGoodbye = () => {
               </Select.Popover>
             </Select>
 
-            <Select value={welcomeType} onChange={(x) => setWelcomeType(x.toString() as "embed" | "text")}>
+            <Select value={welcomeType} onChange={(x) => setWelcomeType((x?.toString() ?? "text") as "embed" | "text")}>
               <Label>Welcome Message Type</Label>
               <Select.Trigger>
                 <Select.Value />
@@ -221,7 +221,7 @@ const WelcomeGoodbye = () => {
 
         {goodbyeEnabled && (
           <>
-            <Select value={goodbyeChannel} onChange={(x) => setGoodbyeChannel(x.toString())}>
+            <Select value={goodbyeChannel} onChange={(x) => setGoodbyeChannel(x?.toString() ?? "")}>
               <Label>Goodbye Channel</Label>
               <Select.Trigger>
                 <Select.Value />
@@ -239,7 +239,7 @@ const WelcomeGoodbye = () => {
               </Select.Popover>
             </Select>
 
-            <Select value={goodbyeType} onChange={(x) => setGoodbyeType(x.toString() as "embed" | "text")}>
+            <Select value={goodbyeType} onChange={(x) => setGoodbyeType((x?.toString() ?? "text") as "embed" | "text")}>
               <Label>Welcome Message Type</Label>
               <Select.Trigger>
                 <Select.Value />

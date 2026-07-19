@@ -90,7 +90,7 @@ const App = () => {
           <Select
             id="page"
             value={page}
-            onChange={(e) => setPage(e.toString())}
+            onChange={(e) => setPage(e?.toString() ?? "main")}
           >
             <Label>Page</Label>
             <Select.Trigger>

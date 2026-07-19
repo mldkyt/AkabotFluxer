@@ -1,11 +1,23 @@
 import { Client, Message } from "@fluxerjs/core";
 import { performCommandMessageActions } from "../src/commands.ts";
+import { prisma } from "../src/database.ts";
 
 async function sendHelp(message: Message) {
   if (!message.channel) return;
+  if (!message.guild) return;
 
-  const replyState = await performCommandMessageActions(message);
+  const serverSettings = await prisma.serverSettings.upsert({
+    where: {
+      guildId: message.guild.id,
+    },
+    create: { guildId: message.guild.id },
+    update: {},
+  });
+
+  const replyState = await performCommandMessageActions(serverSettings, message);
   if (replyState === "cancel") return;
+
+  if (message.content !== `${serverSettings.prefix}help`) return;
 
   const content = `# Akabot Help
 
