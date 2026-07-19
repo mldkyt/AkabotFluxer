@@ -2,40 +2,95 @@ import { Client, Message } from "@fluxerjs/core";
 import { prisma } from "../src/database.ts";
 import { authorizeRequest } from "../src/web.ts";
 import { z } from "zod";
+import { performCommandMessageActions } from "../src/commands.ts";
+import { captureException } from "@sentry/deno";
+import { sendToBotChannelOrReply } from "../src/serverSettings.ts";
+
+async function handleIamCommmand(message: Message) {
+  if (!message.guild) return;
+  if (message.author.bot) return;
+
+  const serverSettings = await prisma.serverSettings.upsert({
+    where: { guildId: message.guild.id },
+    create: { guildId: message.guild.id },
+    update: {},
+  });
+
+  const args = message.content.split(" ");
+  if (args[0] !== `${serverSettings.prefix}iam`) return;
+
+  const replyState = await performCommandMessageActions(serverSettings, message);
+  if (replyState === "cancel") return;
+
+  if (args.length === 2) {
+    try {
+      const iamRole = await prisma.iamRoles.findFirst({
+        where: {
+          guildId: message.guild.id,
+          tag: args[1],
+        },
+      });
+
+      if (!iamRole) {
+        await sendToBotChannelOrReply(message, `Unknown !iam role ${args[1]}`);
+
+        return;
+      }
+
+      const member = await message.guild.fetchMember(message.author.id);
+      const role = message.guild.roles.get(iamRole.roleId);
+      if (!role) return;
+
+      if (member.roles.has(iamRole.roleId)) {
+        await member.removeRole(iamRole.roleId);
+
+        await sendToBotChannelOrReply(message, `✅ Removed role ${role.name} from you!`);
+        return;
+      } else {
+        await member.addRole(iamRole.roleId);
+        await sendToBotChannelOrReply(message, `✅ Added role ${role.name} to you!`);
+      }
+    } catch (e) {
+      await sendToBotChannelOrReply(message, `❌ Error adding role! ${e}`);
+
+      captureException(e);
+    }
+  }
+}
+
+async function handleIamListCommand(message: Message) {
+  if (!message.guild) return;
+  if (message.author.bot) return;
+
+  const serverSettings = await prisma.serverSettings.upsert({
+    where: { guildId: message.guild.id },
+    create: { guildId: message.guild.id },
+    update: {},
+  });
+
+  if (message.content !== `${serverSettings.prefix}iamlist`) return;
+
+  const replyState = await performCommandMessageActions(serverSettings, message);
+  if (replyState === "cancel") return;
+
+  let list = `!iam roles list: `;
+
+  const iamRoles = await prisma.iamRoles.findMany({
+    where: { guildId: message.guild.id },
+  });
+
+  for (const iamRole of iamRoles) {
+    list += `\`${iamRole.tag}\`, `;
+  }
+
+  list = list.substring(0, list.lastIndexOf(","));
+
+  await sendToBotChannelOrReply(message, list);
+}
 
 export function setup(client: Client) {
-  client.on("messageCreate", async (msg: Message) => {
-    if (!msg.guild) return;
-
-    const args = msg.content.split(" ");
-    if (args.length === 2 && args[0] === "!iam") {
-      try {
-        const iamRole = await prisma.iamRoles.findFirst({
-          where: {
-            guildId: msg.guild.id,
-            tag: args[1],
-          },
-        });
-
-        if (!iamRole) return;
-        const member = await msg.guild.fetchMember(msg.author.id);
-        const role = msg.guild.roles.get(iamRole.roleId);
-        if (!role) return;
-
-        if (member.roles.has(iamRole.roleId)) {
-          await member.removeRole(iamRole.roleId);
-          await msg.reply(`✅ Removed role ${role.name} from you!`);
-          return;
-        } else {
-          await member.addRole(iamRole.roleId);
-          await msg.reply(`✅ Added role ${role.name} to you!`);
-        }
-      } catch (e) {
-        await msg.reply(`❌ Error adding role! ${e}`);
-        console.error(e);
-      }
-    }
-  });
+  client.on("messageCreate", handleIamCommmand);
+  client.on("messageCreate", handleIamListCommand);
 }
 
 export async function webRequest(client: Client, req: Request, url: URL) {
@@ -45,6 +100,9 @@ export async function webRequest(client: Client, req: Request, url: URL) {
       return new Response(`401 Unauthorized`, { status: 401 });
     }
 
+    const guild = client.guilds.find((g) => g.id === guildId);
+    if (!guild) return new Response(`Guild not found`, { status: 400 });
+
     if (req.method === "GET") {
       const iamRoles = await prisma.iamRoles.findMany({
         where: {
@@ -52,9 +110,9 @@ export async function webRequest(client: Client, req: Request, url: URL) {
         },
       });
 
-      console.log(`Returning ${iamRoles.length} roles to client`);
       return new Response(JSON.stringify(iamRoles.map((x) => ({
         roleId: x.roleId,
+        roleName: guild.roles.find((r) => r.id === x.roleId)?.name ?? "Unknown role",
         tag: x.tag,
       }))));
     } else if (req.method === "POST") {
@@ -91,7 +149,6 @@ export async function webRequest(client: Client, req: Request, url: URL) {
         },
       });
 
-      console.log(`Inserted !iam ${body.tag} for role ${body.roleId}`);
       return new Response(JSON.stringify({
         roleId: iamRole.roleId,
         tag: iamRole.tag,

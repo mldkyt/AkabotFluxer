@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import MainPage from "./components/Main";
-import ReactionRoles from "./components/ReactionRoles";
+import MainPage from "./components/Main.tsx";
+import ReactionRoles from "./components/ReactionRoles.tsx";
 import { Button, Input, Label, ListBox, Select, Toast, Typography } from "@heroui/react";
 import WelcomeGoodbye from "./components/WelcomeGoodbye.tsx";
 import ChatSummary from "./components/ChatSummary.tsx";
+import RolesOnJoin from "./components/RolesOnJoin.tsx";
 
 const App = () => {
   const [authorized, setAuthorized] = useState(false);
@@ -115,6 +116,10 @@ const App = () => {
                   <Label>Chat Summary</Label>
                   <ListBox.ItemIndicator />
                 </ListBox.Item>
+                <ListBox.Item id="roles-on-join" textValue="Roles on Join">
+                  <Label>Roles on Join</Label>
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
               </ListBox>
             </Select.Popover>
           </Select>
@@ -122,6 +127,7 @@ const App = () => {
           {page === "reaction-roles" && <ReactionRoles />}
           {page === "welcome-goodbye" && <WelcomeGoodbye />}
           {page === "chat-summary" && <ChatSummary />}
+          {page === "roles-on-join" && <RolesOnJoin />}
         </>
       )}
     </div>

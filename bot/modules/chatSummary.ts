@@ -259,22 +259,6 @@ async function summarizeMidnight(client: Client) {
 export function setup(client: Client) {
   client.on("messageCreate", addChatSummary);
 
-  client.on("messageCreate", async (msg) => {
-    if (!msg.guild) return;
-
-    if (msg.content === "!summarize") {
-      console.log("Summarizing midnight");
-      await summarizeMidnight(client);
-    }
-
-    if (msg.content === "!addfake") {
-      if (!msg.channel) return;
-      const fakeMessage = await msg.channel.send("Fake message");
-      for (let i = 0; i < 10; i++) await addChatSummary(fakeMessage);
-      console.log("Added fake 10 messages");
-    }
-  });
-
   setInterval(() => {
     const date = new Date();
     if (date.getHours() === 0 && date.getMinutes() === 0) {

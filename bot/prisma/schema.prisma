@@ -153,3 +153,10 @@ model ChatSummarySettings {
   summariesRows        Int     @default(5)
   countBots            Boolean @default(false)
 }
+
+model RolesOnJoin {
+  guildId String
+  roleId  String
+
+  @@id([guildId, roleId])
+}

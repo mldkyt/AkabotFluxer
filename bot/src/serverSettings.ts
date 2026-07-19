@@ -2,10 +2,14 @@ import { Guild, GuildChannel, Message, MessageSendOptions, ReplyOptions } from "
 import { prisma } from "./database.ts";
 
 export async function getBotChannel(guild: Guild): Promise<GuildChannel | null> {
-  const serverSettings = await prisma.serverSettings.findUnique({
+  const serverSettings = await prisma.serverSettings.upsert({
     where: {
       guildId: guild.id,
     },
+    create: {
+      guildId: guild.id,
+    },
+    update: {},
   });
 
   if (!serverSettings) return null;
@@ -18,6 +22,7 @@ export async function getBotChannel(guild: Guild): Promise<GuildChannel | null> 
 }
 
 export async function sendToBotChannelOrReply(messageToReplyTo: Message, message: string | MessageSendOptions) {
+  console.log("sendToBotChannelOrReply called with", message);
   if (!messageToReplyTo.guild) return;
   const botChannel = await getBotChannel(messageToReplyTo.guild);
 

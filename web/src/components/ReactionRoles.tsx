@@ -4,7 +4,7 @@ import { Skeleton } from "@heroui/react/skeleton";
 
 const ReactionRoles = () => {
   const [loading, setLoading] = useState(true);
-  const [iamRoles, setIamRoles] = useState<{ roleId: string; tag: string }[]>([]);
+  const [iamRoles, setIamRoles] = useState<{ roleId: string; roleName: string; tag: string }[]>([]);
   const [roles, setRoles] = useState<{ name: string; id: string }[]>([]);
 
   const [addNewRole, setAddNewRole] = useState<Key | null>("");
@@ -73,7 +73,7 @@ const ReactionRoles = () => {
         return;
       }
 
-      setIamRoles((prev) => [...prev, { roleId: addNewRole.toString(), tag: addNewTag }]);
+      setIamRoles((prev) => [...prev, { roleId: addNewRole.toString(), roleName: roles.find((r) => r.id === addNewRole.toString())?.name ?? "Unknown role", tag: addNewTag }]);
       setAddNewRole("");
       setAddNewTag("");
     } catch (e) {
@@ -248,8 +248,7 @@ const ReactionRoles = () => {
               {iamRoles.map((iamRole) => (
                 <Table.Row key={iamRole.roleId}>
                   <Table.Cell>
-                    {roles.find((role) => role.id === iamRole.roleId)?.name ??
-                      "Unknown role"}
+                    @{iamRole.roleName}
                   </Table.Cell>
                   <Table.Cell>
                     {editRole && iamRole.roleId === editRole

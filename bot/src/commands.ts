@@ -7,7 +7,7 @@ export async function performCommandMessageActions(settings: {
 }, msg: Message): Promise<"cancel" | "noReply" | "ok"> {
   if (!msg.guild) return "ok";
 
-  if (settings.onlyAllowCommandsInBotChannel) {
+  if (settings.botChannel !== msg.channelId && settings.onlyAllowCommandsInBotChannel) {
     await msg.reply(`Please use <#${settings.botChannel}> for commands`);
     return "cancel";
   }

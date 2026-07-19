@@ -18,6 +18,7 @@ async function sendHelp(message: Message) {
   if (message.content !== `${serverSettings.prefix}help`) return;
 
   const replyState = await performCommandMessageActions(serverSettings, message);
+  console.log("help", replyState);
   if (replyState === "cancel") return;
 
   const content = `# Akabot Help

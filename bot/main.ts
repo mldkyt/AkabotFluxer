@@ -1,4 +1,20 @@
+import * as Sentry from "npm:@sentry/deno";
 import { Client } from "@fluxerjs/core";
+
+const sentryDsn = Deno.env.get("SENTRY_DSN");
+
+if (sentryDsn) {
+  Sentry.init({
+    dsn: sentryDsn,
+
+    // Alternatively, use `process.env.npm_package_version` for a dynamic release version
+    // if your build tool supports it.
+    release: "akabot-fluxer@0.0.1",
+
+    integrations: [],
+    tracesSampleRate: 0,
+  });
+}
 
 const client = new Client({ intents: 0 });
 

@@ -4,24 +4,33 @@ import z from "zod";
 import { prisma } from "../src/database.ts";
 import { setCookie } from "jsr:@std/http/cookie";
 import { serveDir, serveFile } from "jsr:@std/http/file-server";
+import { performCommandMessageActions } from "../src/commands.ts";
 
 export function setup(client: Client) {
   client.on("messageCreate", async (msg: Message) => {
     if (!msg.guild) return;
+    if (msg.author.bot) return;
 
-    if (msg.content === "!settings") {
-      // Permission check
-      const member = await msg.guild.fetchMember(msg.author.id);
-      if (!member.permissions.has(PermissionFlags.ManageGuild)) {
-        await msg.reply("You do not have permission to use this command.");
-      }
+    const serverSettings = await prisma.serverSettings.upsert({
+      where: { guildId: msg.guild.id },
+      update: {},
+      create: { guildId: msg.guild.id },
+    });
 
-      const token = await generateToken(msg.guild.id);
+    if (msg.content !== `${serverSettings.prefix}settings`) return;
+    await performCommandMessageActions(serverSettings, msg);
 
-      await msg.author.send({
-        content: `Your token for the web UI is ${token}`,
-      });
+    // Permission check
+    const member = await msg.guild.fetchMember(msg.author.id);
+    if (!member.permissions.has(PermissionFlags.ManageGuild)) {
+      await msg.reply("You do not have permission to use this command.");
     }
+
+    const token = await generateToken(msg.guild.id);
+
+    await msg.author.send({
+      content: `Your token for the web UI is ${token}`,
+    });
   });
 }
 
