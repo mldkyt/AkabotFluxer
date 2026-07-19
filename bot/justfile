@@ -3,7 +3,7 @@ run:
 
 db-push:
     deno run -A --env=.env npm:prisma generate
-    deno run -A --env=.env npm:prisma db push --force-reset
+    deno run -A --env=.env npm:prisma db push
 
 db-up:
     docker compose -f docker-compose.local-db.yml up -d

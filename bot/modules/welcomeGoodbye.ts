@@ -251,23 +251,6 @@ export function setup(client: Client) {
   client.on("guildMemberAdd", handleMemberAdd);
   client.on("guildMemberRemove", handleMemberRemove);
 
-  client.on("messageCreate", async (message) => {
-    const member = message.guild?.members.get(message.author.id);
-    if (!member) {
-      console.log("Member not found");
-      return;
-    }
-    if (message.content === "!debug join") {
-      console.log("Test join");
-      await handleMemberAdd(member);
-    }
-
-    if (message.content === "!debug leave") {
-      console.log("Test leave");
-      await handleMemberRemove(member);
-    }
-  });
-
   setTimeout(async () => {
     await handleGracePeriods(client);
   }, 1000);

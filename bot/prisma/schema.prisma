@@ -56,3 +56,17 @@ model WelcomeSecondGracePeriod {
   messageId String
   expiresAt DateTime
 }
+
+model ChatStreaks {
+  guildId         String
+  userId          String
+  streakStartDate DateTime
+  lastMessageDate DateTime
+
+  @@id([guildId, userId])
+}
+
+model ServerSettings {
+  guildId    String  @id
+  botChannel String?
+}
