@@ -1,10 +1,13 @@
 import { Typography } from "@heroui/react/typography";
 import { useEffect, useState } from "react";
-import { Button, type Key, Label, ListBox, Select } from "@heroui/react";
+import { Button, FieldError, Input, type Key, Label, ListBox, Select, Switch, TextField } from "@heroui/react";
 
 const Main = () => {
   const [botChannel, setBotChannel] = useState<Key>("null");
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
+  const [deleteCommandMessage, setDeleteCommandMessage] = useState(false);
+  const [onlyAllowCommandsInBotChannel, setOnlyAllowCommandsInBotChannel] = useState(false);
+  const [commandPrefix, setCommandPrefix] = useState("!");
 
   const getSettings = async () => {
     const fetchChannels = await fetch("/api/text-channels", {
@@ -28,12 +31,11 @@ const Main = () => {
     const channels = await fetchChannels.json();
     const serverSettings = await fetchServerSettings.json();
 
-    if (serverSettings && serverSettings.botChannel) {
-      setBotChannel(serverSettings.botChannel);
-    } else {
-      setBotChannel("null");
-    }
+    setBotChannel(serverSettings.botChannel);
+    setOnlyAllowCommandsInBotChannel(serverSettings.onlyAllowCommandsInBotChannel);
+    setDeleteCommandMessage(serverSettings.deleteCommandMessage);
     setChannels(channels);
+    setCommandPrefix(serverSettings.prefix);
   };
 
   const setSettings = async () => {
@@ -42,6 +44,9 @@ const Main = () => {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       body: JSON.stringify({
         botChannel,
+        onlyAllowCommandsInBotChannel,
+        deleteCommandMessage,
+        prefix: commandPrefix,
       }),
     });
 
@@ -61,32 +66,68 @@ const Main = () => {
 
       <Typography type="h2">Basic server settings</Typography>
 
-      <Select
-        value={botChannel}
-        onChange={(x) => setBotChannel(x)}
-      >
-        <Label>Bot Channel</Label>
-        <Select.Trigger>
-          <Select.Value />
-          <Select.Indicator />
-        </Select.Trigger>
-        <Select.Popover>
-          <ListBox>
-            <ListBox.Item key="null" id="null" textValue="No bot channel">
-              No bot channel
-              <ListBox.ItemIndicator />
-            </ListBox.Item>
-            {channels.map((channel) => (
-              <ListBox.Item key={channel.id} id={channel.id} textValue={channel.name}>
-                #{channel.name}
+      <div className="flex flex-col gap-2">
+        <Select
+          value={botChannel}
+          onChange={(x) => setBotChannel(x)}
+        >
+          <Label>Bot Channel</Label>
+          <Select.Trigger>
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox>
+              <ListBox.Item key="null" id="null" textValue="No bot channel">
+                No bot channel
                 <ListBox.ItemIndicator />
               </ListBox.Item>
-            ))}
-          </ListBox>
-        </Select.Popover>
-      </Select>
+              {channels.map((channel) => (
+                <ListBox.Item key={channel.id} id={channel.id} textValue={channel.name}>
+                  #{channel.name}
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              ))}
+            </ListBox>
+          </Select.Popover>
+        </Select>
 
-      <Button onClick={setSettings}>Save</Button>
+        <Switch isSelected={deleteCommandMessage} onChange={setDeleteCommandMessage}>
+          <Switch.Content>
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+            Delete command messages
+          </Switch.Content>
+        </Switch>
+
+        <Switch isSelected={onlyAllowCommandsInBotChannel} onChange={setOnlyAllowCommandsInBotChannel}>
+          <Switch.Content>
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+            Only allow using commands in the bot channel
+          </Switch.Content>
+        </Switch>
+
+        <TextField
+          value={commandPrefix}
+          onChange={(x) => setCommandPrefix(x)}
+          minLength={1}
+          maxLength={5}
+          validate={(x) => {
+            if (x.length < 1) return "The command prefix must be at least 1 letter";
+            if (x.length > 5) return "Command prefix is too long";
+            return true;
+          }}
+        >
+          <Label>Command Prefix</Label>
+          <Input type="text" />
+          <FieldError />
+        </TextField>
+
+        <Button onClick={setSettings} isDisabled={commandPrefix.length < 1 || commandPrefix.length > 5}>Save</Button>
+      </div>
     </div>
   );
 };

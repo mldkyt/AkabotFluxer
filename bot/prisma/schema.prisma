@@ -67,8 +67,11 @@ model ChatStreaks {
 }
 
 model ServerSettings {
-  guildId    String @id
-  botChannel String @default("0")
+  guildId                       String  @id
+  botChannel                    String  @default("0")
+  deleteCommandMessage          Boolean @default(false)
+  onlyAllowCommandsInBotChannel Boolean @default(false)
+  prefix                        String  @default("a!")
 }
 
 model ChatSummary {

@@ -1,12 +1,11 @@
-import { Button, FieldError, Form, Input, type Key, Label, ListBox, Modal, Select, Surface, Table, TextField, Typography, useOverlayState } from "@heroui/react";
+import { Button, FieldError, Form, Input, type Key, Label, ListBox, Modal, Select, Surface, Table, TextField, toast, Typography, useOverlayState } from "@heroui/react";
 import { useEffect, useState } from "react";
+import { Skeleton } from "@heroui/react/skeleton";
 
 const ReactionRoles = () => {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [iamRoles, setIamRoles] = useState<{ roleId: string; tag: string }[]>([]);
   const [roles, setRoles] = useState<{ name: string; id: string }[]>([]);
-  const [message, setMessage] = useState("");
 
   const [addNewRole, setAddNewRole] = useState<Key | null>("");
   const [addNewTag, setAddNewTag] = useState("");
@@ -26,7 +25,7 @@ const ReactionRoles = () => {
           },
         });
         if (!iamRolesFetch.ok) {
-          setError(await iamRolesFetch.text());
+          toast.danger(await iamRolesFetch.text());
           return;
         }
 
@@ -37,14 +36,14 @@ const ReactionRoles = () => {
           },
         });
         if (!rolesFetch.ok) {
-          setError(await rolesFetch.text());
+          toast.danger(await rolesFetch.text());
           return;
         }
 
         setIamRoles(await iamRolesFetch.json());
         setRoles(await rolesFetch.json());
       } catch (e) {
-        setError(`Error fetching data: ${e}`);
+        toast.danger(`Error fetching data: ${e}`);
       } finally {
         setLoading(false);
       }
@@ -55,8 +54,6 @@ const ReactionRoles = () => {
 
   const addNew = async () => {
     try {
-      setError("");
-
       const res = await fetch("/api/iam-roles", {
         method: "POST",
         body: JSON.stringify({
@@ -70,16 +67,15 @@ const ReactionRoles = () => {
       });
 
       if (!res.ok) {
-        setError(await res.text());
+        toast.danger(await res.text());
         return;
       }
 
-      setMessage("Added new role successfully");
       setIamRoles((prev) => [...prev, { roleId: addNewRole.toString(), tag: addNewTag }]);
       setAddNewRole("");
       setAddNewTag("");
     } catch (e) {
-      setError(`Error adding new role: ${e}`);
+      toast.danger(`Error adding new role: ${e}`);
     }
   };
 
@@ -93,8 +89,6 @@ const ReactionRoles = () => {
 
   const finishEditRole = async () => {
     try {
-      setError("");
-
       const res = await fetch("/api/iam-roles", {
         method: "PATCH",
         body: JSON.stringify({
@@ -108,7 +102,7 @@ const ReactionRoles = () => {
       });
 
       if (!res.ok) {
-        setError(await res.text());
+        toast.danger(await res.text());
         return;
       }
 
@@ -120,11 +114,10 @@ const ReactionRoles = () => {
           return x;
         })
       );
-      setMessage("Edited successfully");
       setEditRole("");
       setEditRoleTag("");
     } catch (e) {
-      setError(`An error occurred: ${e}`);
+      toast.danger(`An error occurred: ${e}`);
       console.log(e);
     }
   };
@@ -133,8 +126,6 @@ const ReactionRoles = () => {
 
   const deleteRole = async () => {
     try {
-      setError("");
-
       const res = await fetch(`/api/iam-roles`, {
         method: "DELETE",
         body: JSON.stringify({
@@ -147,7 +138,7 @@ const ReactionRoles = () => {
       });
 
       if (!res.ok) {
-        setError(await res.text());
+        toast.danger(await res.text());
         return;
       }
 
@@ -155,12 +146,28 @@ const ReactionRoles = () => {
 
       deleteModalState.close();
     } catch (e) {
-      setError(`An error occurred: ${e}`);
+      toast.danger(`An error occurred: ${e}`);
       console.log(e);
     }
   };
 
-  console.log(addNewRole);
+  if (loading) {
+    return (
+      <div>
+        <Typography type="h1">!iam Roles</Typography>
+
+        <Skeleton className="w-66 h-12 m-2 rounded-lg" />
+        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
+        <Skeleton className="w-full h-8 m-2 rounded-lg" />
+        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
+        <Skeleton className="w-full h-8 m-2 rounded-lg" />
+        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
+        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
+        <Skeleton className="w-full h-8 m-2 rounded-lg" />
+        <Skeleton className="w-full h-24 m-2 rounded-lg" />
+      </div>
+    );
+  }
 
   return (
     <div>

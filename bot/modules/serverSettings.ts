@@ -25,6 +25,9 @@ export async function webRequest(client: Client, req: Request, url: URL) {
   } else if (req.method === "POST") {
     const serverSettingsValidator = z.object({
       botChannel: z.string().nonempty(),
+      deleteCommandMessage: z.boolean(),
+      onlyAllowCommandsInBotChannel: z.boolean(),
+      prefix: z.string().min(1).max(5),
     });
 
     const body = await req.json();
