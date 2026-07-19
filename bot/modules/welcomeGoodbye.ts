@@ -260,7 +260,7 @@ export function setup(client: Client) {
 
 export async function webRequest(client: Client, req: Request, url: URL) {
   if (url.pathname !== "/api/welcome-goodbye") {
-    return new Response(`404 Not Found`, { status: 404 });
+    return null;
   }
   const guildId = await authorizeRequest(req);
   if (!guildId) {

@@ -25,7 +25,7 @@ RUN apt install -y bash
 
 COPY bot/deno.json .
 COPY bot/deno.lock .
-RUN deno install
+RUN deno install --allow-scripts=npm:*
 
 COPY bot/prisma prisma/.
 COPY bot/prisma.config.ts .
@@ -38,5 +38,7 @@ COPY --from=web /app/dist dist/.
 COPY docker-entrypoint.sh .
 
 RUN chmod +x docker-entrypoint.sh
+
+STOPSIGNAL SIGKILL
 
 ENTRYPOINT [ "bash", "docker-entrypoint.sh" ]

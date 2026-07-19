@@ -5,6 +5,7 @@ import { prisma } from "../src/database.ts";
 async function sendHelp(message: Message) {
   if (!message.channel) return;
   if (!message.guild) return;
+  if (message.author.bot) return;
 
   const serverSettings = await prisma.serverSettings.upsert({
     where: {
@@ -14,10 +15,10 @@ async function sendHelp(message: Message) {
     update: {},
   });
 
+  if (message.content !== `${serverSettings.prefix}help`) return;
+
   const replyState = await performCommandMessageActions(serverSettings, message);
   if (replyState === "cancel") return;
-
-  if (message.content !== `${serverSettings.prefix}help`) return;
 
   const content = `# Akabot Help
 

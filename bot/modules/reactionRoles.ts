@@ -45,8 +45,6 @@ export async function webRequest(client: Client, req: Request, url: URL) {
       return new Response(`401 Unauthorized`, { status: 401 });
     }
 
-    console.log(`Request authorized as ${guildId}`);
-
     if (req.method === "GET") {
       const iamRoles = await prisma.iamRoles.findMany({
         where: {
@@ -69,20 +67,20 @@ export async function webRequest(client: Client, req: Request, url: URL) {
       const result = postBodySchema.safeParse(body);
 
       if (!result.success) {
-        return new Response(`400 Bad Request`, { status: 400 });
+        return new Response(`Unable to parse the client payload`, { status: 400 });
       }
 
       const guild = client.guilds.get(guildId);
       if (!guild) {
-        return new Response(`400 Bad Request`, { status: 400 });
+        return new Response(`The guild was not found (how)`, { status: 400 });
       }
 
       if (!guild.roles.has(body.roleId)) {
-        return new Response(`400 Bad Request`, { status: 400 });
+        return new Response(`The role does not exist`, { status: 400 });
       }
 
-      if (!/^[a-z0-9]$/.test(result.data.tag)) {
-        return new Response(`400 Bad Request`, { status: 400 });
+      if (!/^[a-z0-9]+$/.test(result.data.tag)) {
+        return new Response(`The tag is invalid`, { status: 400 });
       }
 
       const iamRole = await prisma.iamRoles.create({
@@ -108,7 +106,7 @@ export async function webRequest(client: Client, req: Request, url: URL) {
       const result = patchBodySchema.safeParse(body);
 
       if (!result.success) {
-        return new Response(`400 Bad Request`, { status: 400 });
+        return new Response(`Unable to parse the client payload`, { status: 400 });
       }
 
       await prisma.iamRoles.updateMany({

@@ -4,11 +4,14 @@ const client = new Client({ intents: 0 });
 
 // Load modules under modules/
 
-const webRequestHandlers = [] as ((
-  client: Client,
-  req: Request,
-  url: URL,
-) => Response | Promise<Response> | null)[];
+const webRequestHandlers = [] as {
+  fileName: string;
+  handler: (
+    client: Client,
+    req: Request,
+    url: URL,
+  ) => Response | Promise<Response> | null;
+}[];
 
 for (const file of Deno.readDirSync("./modules")) {
   if (file.isFile && file.name.endsWith(".ts")) {
@@ -29,12 +32,19 @@ for (const file of Deno.readDirSync("./modules")) {
     };
 
     if (setup) setup(client);
-    if (webRequest) webRequestHandlers.push(webRequest);
+    if (webRequest) {
+      webRequestHandlers.push({
+        fileName: file.name,
+        handler: webRequest,
+      });
+    }
   }
 }
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user?.username}!`);
+
+  console.log("Registered", webRequestHandlers.length, "web request handlers.");
 });
 
 Deno.serve({ port: 3000 }, async (req: Request) => {
@@ -42,12 +52,16 @@ Deno.serve({ port: 3000 }, async (req: Request) => {
   console.log(`${req.method} ${url.pathname}`);
 
   for (const handler of webRequestHandlers) {
-    const response = await handler(client, req, url);
+    const response = await handler.handler(client, req, url);
     if (response) {
-      console.log("Handling request by handler");
+      console.log("Handling request by handler", handler.fileName);
       return response;
+    } else {
+      console.log("Handler", handler.fileName, "did not handle request.");
     }
   }
+
+  console.log("404 not found");
 
   return new Response(`404 Not Found`, {
     status: 404,

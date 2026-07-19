@@ -284,13 +284,13 @@ export function setup(client: Client) {
 }
 
 export async function webRequest(client: Client, req: Request, url: URL) {
-  const guildId = await authorizeRequest(req);
-  if (!guildId) return new Response("Unauthorized", { status: 403 });
-
-  const guild = client.guilds.find((guild) => guild.id === guildId);
-  if (!guild) return new Response("Guild not found", { status: 400 });
-
   if (url.pathname === "/api/chat-summary/channels") {
+    const guildId = await authorizeRequest(req);
+    if (!guildId) return new Response("Unauthorized", { status: 403 });
+
+    const guild = client.guilds.find((guild) => guild.id === guildId);
+    if (!guild) return new Response("Guild not found", { status: 400 });
+
     if (req.method === "POST") {
       const data = await req.json();
       const postValidator = z.object({
@@ -346,6 +346,12 @@ export async function webRequest(client: Client, req: Request, url: URL) {
   }
 
   if (url.pathname === "/api/chat-summary") {
+    const guildId = await authorizeRequest(req);
+    if (!guildId) return new Response("Unauthorized", { status: 403 });
+
+    const guild = client.guilds.find((guild) => guild.id === guildId);
+    if (!guild) return new Response("Guild not found", { status: 400 });
+
     if (req.method === "GET") {
       const chatSummarySettings = await prisma.chatSummarySettings.upsert({
         where: {
