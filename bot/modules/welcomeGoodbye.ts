@@ -159,12 +159,14 @@ async function handleGracePeriods(client: Client) {
 }
 
 async function handleMemberRemove(member: GuildMember) {
-  const welcomeSettings = await prisma.welcomeGoodbyeSettings.findFirst({
+  const welcomeSettings = await prisma.welcomeGoodbyeSettings.upsert({
     where: {
       guildId: member.guild.id,
     },
+    create: { guildId: member.guild.id },
+    update: {},
   });
-  if (!welcomeSettings) return;
+
   if (!welcomeSettings.goodbyeEnabled) return;
 
   const secondGracePeriod = await prisma.welcomeSecondGracePeriod.findFirst({
@@ -266,34 +268,15 @@ export async function webRequest(client: Client, req: Request, url: URL) {
   }
 
   if (req.method === "GET") {
-    const welcomeGoodbyeSettings = await prisma.welcomeGoodbyeSettings.findFirst({
+    const welcomeGoodbyeSettings = await prisma.welcomeGoodbyeSettings.upsert({
       where: {
         guildId,
       },
+      update: {},
+      create: { guildId },
     });
 
-    if (welcomeGoodbyeSettings) {
-      return new Response(JSON.stringify(welcomeGoodbyeSettings), { status: 200 });
-    } else {
-      return new Response(
-        JSON.stringify({
-          guildId,
-          welcomeEnabled: false,
-          welcomeChannel: "",
-          welcomeType: "text",
-          welcomeTitle: "Welcome {mention}!",
-          welcomeContent: "Welcome {name} to {server}!",
-          welcomeFirstGracePeriod: 5,
-          welcomeSecondGracePeriod: 10,
-          goodbyeEnabled: false,
-          goodbyeChannel: "",
-          goodbyeType: "text",
-          goodbyeTitle: "Goodbye {mention}!",
-          goodbyeContent: "{server} will miss {name}. :(",
-        } as WelcomeSettings),
-        { status: 200 },
-      );
-    }
+    return new Response(JSON.stringify(welcomeGoodbyeSettings), { status: 200 });
   } else if (req.method === "POST") {
     const validator = z.object({
       welcomeEnabled: z.boolean(),

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import MainPage from "./components/Main";
 import ReactionRoles from "./components/ReactionRoles";
-import { Button, Input, Label, ListBox, Select, Typography } from "@heroui/react";
+import { Button, Input, Label, ListBox, Select, Toast, Typography } from "@heroui/react";
 import WelcomeGoodbye from "./components/WelcomeGoodbye.tsx";
+import ChatSummary from "./components/ChatSummary.tsx";
 
 const App = () => {
   const [authorized, setAuthorized] = useState(false);
@@ -52,6 +53,7 @@ const App = () => {
 
   return (
     <div className="m-auto w-3/4 min-h-screen">
+      <Toast.Provider />
       {!authorized && (
         <>
           <Typography type="h1" className="text-center mt-4">
@@ -109,12 +111,17 @@ const App = () => {
                   <Label>Welcome & Goodbye Messages</Label>
                   <ListBox.ItemIndicator />
                 </ListBox.Item>
+                <ListBox.Item id="chat-summary" textValue="Chat Summary">
+                  <Label>Chat Summary</Label>
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
               </ListBox>
             </Select.Popover>
           </Select>
           {page === "main" && <MainPage />}
           {page === "reaction-roles" && <ReactionRoles />}
           {page === "welcome-goodbye" && <WelcomeGoodbye />}
+          {page === "chat-summary" && <ChatSummary />}
         </>
       )}
     </div>

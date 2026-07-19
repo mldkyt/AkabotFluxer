@@ -28,18 +28,18 @@ model IamRoles {
 
 model WelcomeGoodbyeSettings {
   guildId                  String  @id
-  welcomeEnabled           Boolean
-  welcomeChannel           String
-  welcomeType              String
-  welcomeTitle             String
-  welcomeContent           String
-  welcomeFirstGracePeriod  Int
-  welcomeSecondGracePeriod Int
-  goodbyeEnabled           Boolean
-  goodbyeChannel           String
-  goodbyeType              String
-  goodbyeTitle             String
-  goodbyeContent           String
+  welcomeEnabled           Boolean @default(false)
+  welcomeChannel           String  @default("")
+  welcomeType              String  @default("text")
+  welcomeTitle             String  @default("Welcome {member}!")
+  welcomeContent           String  @default("Welcome {name} to {server}!")
+  welcomeFirstGracePeriod  Int     @default(5)
+  welcomeSecondGracePeriod Int     @default(60)
+  goodbyeEnabled           Boolean @default(false)
+  goodbyeChannel           String  @default("")
+  goodbyeType              String  @default("text")
+  goodbyeTitle             String  @default("Goodbye {mention}!")
+  goodbyeContent           String  @default("{server} will miss {name}. :(")
 }
 
 model WelcomeFirstGracePeriod {
@@ -67,6 +67,86 @@ model ChatStreaks {
 }
 
 model ServerSettings {
-  guildId    String  @id
-  botChannel String?
+  guildId    String @id
+  botChannel String @default("0")
+}
+
+model ChatSummary {
+  id           Int    @id @default(autoincrement())
+  channelId    String
+  guildId      String
+  messageCount Int    @default(0)
+
+  members ChatSummaryMember[]
+
+  @@unique([guildId, channelId])
+}
+
+model ChatSummaryMember {
+  id            Int    @id @default(autoincrement())
+  chatSummaryId Int
+  memberId      String
+  messageCount  Int    @default(0)
+
+  channel ChatSummary @relation(fields: [chatSummaryId], references: [id])
+
+  @@unique([memberId, chatSummaryId])
+}
+
+model MonthlyChatSummary {
+  id           Int    @id @default(autoincrement())
+  channelId    String
+  guildId      String
+  messageCount Int    @default(0)
+
+  members MonthlyChatSummaryMember[]
+
+  @@unique([channelId, guildId])
+}
+
+model MonthlyChatSummaryMember {
+  id            Int    @id @default(autoincrement())
+  chatSummaryId Int
+  memberId      String
+  messageCount  Int    @default(0)
+
+  channel MonthlyChatSummary @relation(fields: [chatSummaryId], references: [id])
+
+  @@unique([chatSummaryId, memberId])
+}
+
+model YearlyChatSummary {
+  id           Int    @id @default(autoincrement())
+  channelId    String
+  guildId      String
+  messageCount Int    @default(0)
+
+  members YearlyChatSummaryMember[]
+
+  @@unique([channelId, guildId])
+}
+
+model YearlyChatSummaryMember {
+  id            Int    @id @default(autoincrement())
+  chatSummaryId Int
+  memberId      String
+  messageCount  Int    @default(0)
+
+  channel YearlyChatSummary @relation(fields: [chatSummaryId], references: [id])
+
+  @@unique([chatSummaryId, memberId])
+}
+
+model ChatSummaryChannels {
+  id        Int    @id @default(autoincrement())
+  guildId   String
+  channelId String
+}
+
+model ChatSummarySettings {
+  guildId              String  @id
+  enableExtraSummaries Boolean @default(false)
+  extraSummariesRows   Int     @default(10)
+  summariesRows        Int     @default(5)
+  countBots            Boolean @default(false)
 }
