@@ -28,6 +28,6 @@ export async function request(method: "GET" | "POST" | "PATCH" | "DELETE", apiEn
 
   return {
     ok: true,
-    data: await response.json(),
+    data: response.headers.get("Content-Type")?.startsWith("application/json") ? (await response.json()) as any : await response.text(),
   };
 }

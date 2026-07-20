@@ -276,7 +276,7 @@ export async function webRequest(client: Client, req: Request, url: URL) {
       create: { guildId },
     });
 
-    return new Response(JSON.stringify(welcomeGoodbyeSettings), { status: 200 });
+    return new Response(JSON.stringify(welcomeGoodbyeSettings), { status: 200, headers: { "Content-Type": "application/json" } });
   } else if (req.method === "POST") {
     const validator = z.object({
       welcomeEnabled: z.boolean(),
@@ -323,7 +323,7 @@ export async function webRequest(client: Client, req: Request, url: URL) {
       create: { ...parsed.data, guildId },
     });
 
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    return new Response(JSON.stringify({ success: true }), { status: 200, headers: { "Content-Type": "application/json" } });
   } else {
     return new Response(`405 Method Not Allowed`, { status: 405 });
   }

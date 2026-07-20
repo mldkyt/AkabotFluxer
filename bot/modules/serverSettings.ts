@@ -18,7 +18,7 @@ export async function webRequest(client: Client, req: Request, url: URL) {
       },
     });
 
-    return new Response(JSON.stringify(serverSettings), { status: 200 });
+    return new Response(JSON.stringify(serverSettings), { status: 200, headers: { "Content-Type": "application/json" } });
   } else if (req.method === "POST") {
     const serverSettingsValidator = z.object({
       botChannel: z.string().nonempty(),

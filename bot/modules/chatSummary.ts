@@ -356,7 +356,7 @@ export async function webRequest(client: Client, req: Request, url: URL) {
           ...chatSummarySettings,
           channels: settings.map((ch) => ch.channelId),
         }),
-        { status: 200 },
+        { status: 200, headers: { "Content-Type": "application/json" } },
       );
     }
 

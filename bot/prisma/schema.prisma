@@ -177,3 +177,15 @@ model VerificationTokens {
 
   @@id([memberId, guildId])
 }
+
+model MeowBackSettings {
+  channelId String @id
+  guildId   String
+
+  meow   Boolean @default(false)
+  waf    Boolean @default(false)
+  bark   Boolean @default(false)
+  colon3 Boolean @default(false)
+  owo    Boolean @default(false)
+  awawa  Boolean @default(false)
+}

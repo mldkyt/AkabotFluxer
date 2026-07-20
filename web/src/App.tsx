@@ -6,6 +6,7 @@ import WelcomeGoodbye from "./components/WelcomeGoodbye.tsx";
 import ChatSummary from "./components/ChatSummary.tsx";
 import RolesOnJoin from "./components/RolesOnJoin.tsx";
 import Verification from "./components/Verification.tsx";
+import MeowBack from "./components/MeowBack.tsx";
 
 const App = () => {
   const [authorized, setAuthorized] = useState(false);
@@ -125,6 +126,10 @@ const App = () => {
                   <Label>Verification</Label>
                   <ListBox.ItemIndicator />
                 </ListBox.Item>
+                <ListBox.Item id="meow-back" textValue="Meow Back">
+                  <Label>Meow Back</Label>
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
               </ListBox>
             </Select.Popover>
           </Select>
@@ -134,6 +139,7 @@ const App = () => {
           {page === "chat-summary" && <ChatSummary />}
           {page === "roles-on-join" && <RolesOnJoin />}
           {page === "verification" && <Verification />}
+          {page === "meow-back" && <MeowBack />}
         </>
       )}
     </div>

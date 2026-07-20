@@ -61,7 +61,7 @@ export async function webRequest(client: Client, req: Request, url: URL) {
           id: r.roleId,
           name: guild.roles.find((role) => role.id === r.roleId)?.name ?? "Unknown role",
         }))),
-        { status: 200 },
+        { status: 200, headers: { "Content-Type": "application/json" } },
       );
     }
 
