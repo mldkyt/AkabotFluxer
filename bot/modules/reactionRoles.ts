@@ -1,96 +1,70 @@
-import { Client, Message } from "@fluxerjs/core";
+import { Client, Message, MessageSendOptions } from "@fluxerjs/core";
 import { prisma } from "../src/database.ts";
 import { authorizeRequest } from "../src/web.ts";
 import { z } from "zod";
-import { performCommandMessageActions } from "../src/commands.ts";
 import { captureException } from "@sentry/deno";
 import { sendToBotChannelOrReply } from "../src/serverSettings.ts";
 
-async function handleIamCommmand(message: Message) {
+export function checkCommand(prefix: string, message: Message): boolean {
+  return message.content.startsWith(`${prefix}iam`) || message.content === `${prefix}iamroles`;
+}
+
+export async function runCommand(prefix: string, message: Message): Promise<MessageSendOptions | undefined> {
   if (!message.guild) return;
-  if (message.author.bot) return;
 
-  const serverSettings = await prisma.serverSettings.upsert({
-    where: { guildId: message.guild.id },
-    create: { guildId: message.guild.id },
-    update: {},
-  });
+  if (message.content.startsWith(`${prefix}iam`)) {
+    const args = message.content.split(" ");
+    if (args.length === 2) {
+      try {
+        const iamRole = await prisma.iamRoles.findFirst({
+          where: {
+            guildId: message.guild.id,
+            tag: args[1],
+          },
+        });
 
-  const args = message.content.split(" ");
-  if (args[0] !== `${serverSettings.prefix}iam`) return;
+        if (!iamRole) {
+          await sendToBotChannelOrReply(message, `Unknown !iam role ${args[1]}`);
 
-  const replyState = await performCommandMessageActions(serverSettings, message);
-  if (replyState === "cancel") return;
+          return;
+        }
 
-  if (args.length === 2) {
-    try {
-      const iamRole = await prisma.iamRoles.findFirst({
-        where: {
-          guildId: message.guild.id,
-          tag: args[1],
-        },
-      });
+        const member = await message.guild.fetchMember(message.author.id);
+        const role = message.guild.roles.get(iamRole.roleId);
+        if (!role) return;
 
-      if (!iamRole) {
-        await sendToBotChannelOrReply(message, `Unknown !iam role ${args[1]}`);
+        if (member.roles.has(iamRole.roleId)) {
+          await member.removeRole(iamRole.roleId);
 
-        return;
+          await sendToBotChannelOrReply(message, `✅ Removed role ${role.name} from you!`);
+          return;
+        } else {
+          await member.addRole(iamRole.roleId);
+          await sendToBotChannelOrReply(message, `✅ Added role ${role.name} to you!`);
+        }
+      } catch (e) {
+        await sendToBotChannelOrReply(message, `❌ Error adding role! ${e}`);
+
+        captureException(e);
       }
-
-      const member = await message.guild.fetchMember(message.author.id);
-      const role = message.guild.roles.get(iamRole.roleId);
-      if (!role) return;
-
-      if (member.roles.has(iamRole.roleId)) {
-        await member.removeRole(iamRole.roleId);
-
-        await sendToBotChannelOrReply(message, `✅ Removed role ${role.name} from you!`);
-        return;
-      } else {
-        await member.addRole(iamRole.roleId);
-        await sendToBotChannelOrReply(message, `✅ Added role ${role.name} to you!`);
-      }
-    } catch (e) {
-      await sendToBotChannelOrReply(message, `❌ Error adding role! ${e}`);
-
-      captureException(e);
     }
   }
-}
 
-async function handleIamListCommand(message: Message) {
-  if (!message.guild) return;
-  if (message.author.bot) return;
+  if (message.content === `${prefix}iamroles`) {
+    let list = `!iam roles list: `;
 
-  const serverSettings = await prisma.serverSettings.upsert({
-    where: { guildId: message.guild.id },
-    create: { guildId: message.guild.id },
-    update: {},
-  });
+    const iamRoles = await prisma.iamRoles.findMany({
+      where: { guildId: message.guild.id },
+    });
 
-  if (message.content !== `${serverSettings.prefix}iamlist`) return;
+    for (const iamRole of iamRoles) {
+      list += `\`${iamRole.tag}\`, `;
+    }
 
-  const replyState = await performCommandMessageActions(serverSettings, message);
-  if (replyState === "cancel") return;
+    list = list.substring(0, list.lastIndexOf(","));
 
-  let list = `!iam roles list: `;
-
-  const iamRoles = await prisma.iamRoles.findMany({
-    where: { guildId: message.guild.id },
-  });
-
-  for (const iamRole of iamRoles) {
-    list += `\`${iamRole.tag}\`, `;
+    return { content: list };
   }
-
-  list = list.substring(0, list.lastIndexOf(","));
-
-  await sendToBotChannelOrReply(message, list);
-}
-
-export function setup(client: Client) {
-  client.on("messageCreate", handleIamCommmand);
-  client.on("messageCreate", handleIamListCommand);
 }
 
 export async function webRequest(client: Client, req: Request, url: URL) {

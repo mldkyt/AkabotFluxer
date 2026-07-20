@@ -1,43 +1,33 @@
-import { Client, Message } from "@fluxerjs/core";
-import { performCommandMessageActions } from "../src/commands.ts";
+import { Client, Message, MessageSendOptions } from "@fluxerjs/core";
+import { sendToBotChannelOrReply } from "../src/serverSettings.ts";
 import { prisma } from "../src/database.ts";
 
-async function sendHelp(message: Message) {
-  if (!message.channel) return;
-  if (!message.guild) return;
-  if (message.author.bot) return;
+export function checkCommand(prefix: string, message: Message): boolean {
+  return message.content === `${prefix}help`;
+}
 
-  const serverSettings = await prisma.serverSettings.upsert({
-    where: {
-      guildId: message.guild.id,
-    },
-    create: { guildId: message.guild.id },
-    update: {},
-  });
-
-  if (message.content !== `${serverSettings.prefix}help`) return;
-
-  const replyState = await performCommandMessageActions(serverSettings, message);
-  console.log("help", replyState);
-  if (replyState === "cancel") return;
-
+export async function runCommand(prefix: string, message: Message): Promise<MessageSendOptions> {
   const content = `# Akabot Help
 
-- !settings - Admin only, gives you a token for the settings web UI
-- !help - this message`;
+- ${prefix}settings - Admin only, gives you a token for the settings web UI
+- ${prefix}help - this message`;
 
-  if (replyState === "noReply") {
-    await message.channel.send(`<@${message.author.id}>
-${content}`);
-    return;
-  }
-
-  await message.reply(content);
+  return { content };
 }
 
 export function setup(client: Client) {
-  client.on("messageCreate", sendHelp);
-}
+  client.on("messageCreate", async (msg) => {
+    if (!client.user) return;
+    if (!msg.guild) return;
+    if (msg.author.bot) return;
+    if (msg.content !== `<@${client.user.id}>`) return;
 
-export function webRequest(client: Client, req: Request, url: URL) {
+    const serverSettings = await prisma.serverSettings.upsert({
+      where: { guildId: msg.guild.id },
+      create: { guildId: msg.guild.id },
+      update: {},
+    });
+
+    await sendToBotChannelOrReply(msg, `The prefix for all commands for this bot is ${serverSettings.prefix}, e.g. ${serverSettings.prefix}help.`);
+  });
 }

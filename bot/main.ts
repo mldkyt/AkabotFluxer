@@ -1,5 +1,8 @@
 import * as Sentry from "npm:@sentry/deno";
-import { Client } from "@fluxerjs/core";
+import { Client, Message, MessageSendOptions } from "@fluxerjs/core";
+import { prisma } from "./src/database.ts";
+import { performCommandMessageActions } from "./src/commands.ts";
+import { sendToBotChannelOrReply } from "./src/serverSettings.ts";
 
 const sentryDsn = Deno.env.get("SENTRY_DSN");
 
@@ -29,6 +32,11 @@ const webRequestHandlers = [] as {
   ) => Response | Promise<Response> | null;
 }[];
 
+const commandHandlers = [] as {
+  checkCommand: (prefix: string, message: Message) => boolean;
+  runCommand: (prefix: string, message: Message) => Promise<MessageSendOptions | undefined>;
+}[];
+
 for (const file of Deno.readDirSync("./modules")) {
   if (file.isFile && file.name.endsWith(".ts")) {
     const modulePath = `./modules/${file.name}`;
@@ -36,6 +44,8 @@ for (const file of Deno.readDirSync("./modules")) {
     const {
       setup,
       webRequest,
+      checkCommand,
+      runCommand,
     } = await import(modulePath) as {
       setup: ((client: Client) => void) | undefined;
       webRequest:
@@ -45,6 +55,8 @@ for (const file of Deno.readDirSync("./modules")) {
           url: URL,
         ) => Response | Promise<Response> | null)
         | undefined;
+      checkCommand: ((prefix: string, message: Message) => boolean) | undefined;
+      runCommand: ((prefix: string, message: Message) => Promise<void>) | undefined;
     };
 
     if (setup) setup(client);
@@ -54,6 +66,13 @@ for (const file of Deno.readDirSync("./modules")) {
         handler: webRequest,
       });
     }
+
+    if (checkCommand && runCommand) {
+      commandHandlers.push({
+        checkCommand,
+        runCommand,
+      });
+    }
   }
 }
 
@@ -61,6 +80,44 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user?.username}!`);
 
   console.log("Registered", webRequestHandlers.length, "web request handlers.");
+});
+
+client.on("messageCreate", async (msg) => {
+  if (!msg.guild) return;
+  const serverSettings = await prisma.serverSettings.upsert({
+    where: { guildId: msg.guild.id },
+    create: { guildId: msg.guild.id },
+    update: {},
+  });
+
+  if (!msg.content.startsWith(serverSettings.prefix)) return;
+
+  for (const commandHandler of commandHandlers) {
+    if (commandHandler.checkCommand(serverSettings.prefix, msg)) {
+      const preemptiveTasks = await performCommandMessageActions(serverSettings, msg);
+      if (preemptiveTasks === "cancel") return;
+      const commandResponse = await commandHandler.runCommand(serverSettings.prefix, msg);
+      if (!commandResponse) return;
+
+      const botChannel = msg.guild.channels.find((ch) => ch.id === serverSettings.botChannel);
+      if (!botChannel) {
+        if (serverSettings.deleteCommandMessage) {
+          commandResponse.content = `<@${msg.author.id}>\n${commandResponse.content}`;
+          await msg.channel?.send(commandResponse);
+        } else {
+          await msg.reply(commandResponse);
+        }
+        return;
+      }
+
+      commandResponse.content = `<@${msg.author.id}>\n${commandResponse.content}`;
+      await botChannel?.send(commandResponse);
+
+      return;
+    }
+  }
+
+  await sendToBotChannelOrReply(msg, `Unknown command`);
 });
 
 Deno.serve({ port: 3000 }, async (req: Request) => {

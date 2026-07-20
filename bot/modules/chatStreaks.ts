@@ -3,25 +3,21 @@ import { prisma } from "../src/database.ts";
 import { sendToBotChannelOrReply } from "../src/serverSettings.ts";
 
 async function tickChatStreak(member: GuildMember): Promise<{ state: "stayed" } | { state: "updated"; newDays: number } | { state: "lost"; lastStreak: number }> {
-  let chatStreak = await prisma.chatStreaks.findUnique({
+  let chatStreak = await prisma.chatStreaks.upsert({
     where: {
       guildId_userId: {
         guildId: member.guild.id,
         userId: member.id,
       },
     },
+    create: {
+      guildId: member.guild.id,
+      userId: member.id,
+      lastMessageDate: new Date(),
+      streakStartDate: new Date(),
+    },
+    update: {},
   });
-
-  if (!chatStreak) {
-    chatStreak = await prisma.chatStreaks.create({
-      data: {
-        guildId: member.guild.id,
-        userId: member.id,
-        lastMessageDate: new Date(),
-        streakStartDate: new Date(),
-      },
-    });
-  }
 
   const days = Math.floor((chatStreak.lastMessageDate.getTime() - chatStreak.streakStartDate.getTime()) / (3600 * 24 * 1000));
 
@@ -81,7 +77,4 @@ async function onMessageSend(message: Message) {
 
 export function setup(client: Client) {
   client.on("messageCreate", onMessageSend);
-}
-
-export function webRequest(client: Client, req: Request, url: URL) {
 }

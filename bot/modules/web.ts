@@ -1,36 +1,27 @@
-import { Client, Message, PermissionFlags } from "@fluxerjs/core";
-import { authorizeRequest, generateToken } from "../src/web.ts";
-import z from "zod";
-import { prisma } from "../src/database.ts";
+import { Client, Message, MessageSendOptions, PermissionFlags } from "@fluxerjs/core";
 import { setCookie } from "jsr:@std/http/cookie";
 import { serveDir, serveFile } from "jsr:@std/http/file-server";
-import { performCommandMessageActions } from "../src/commands.ts";
+import z from "zod";
+import { prisma } from "../src/database.ts";
+import { authorizeRequest, generateToken } from "../src/web.ts";
 
-export function setup(client: Client) {
-  client.on("messageCreate", async (msg: Message) => {
-    if (!msg.guild) return;
-    if (msg.author.bot) return;
+export function checkCommand(prefix: string, message: Message): boolean {
+  return message.content === `${prefix}settings`;
+}
 
-    const serverSettings = await prisma.serverSettings.upsert({
-      where: { guildId: msg.guild.id },
-      update: {},
-      create: { guildId: msg.guild.id },
-    });
+export async function runCommand(message: Message): Promise<MessageSendOptions | undefined> {
+  if (!message.guild) return;
 
-    if (msg.content !== `${serverSettings.prefix}settings`) return;
-    await performCommandMessageActions(serverSettings, msg);
+  // Permission check
+  const member = await message.guild.fetchMember(message.author.id);
+  if (!member.permissions.has(PermissionFlags.ManageGuild)) {
+    return { content: "You do not have permission to use this command." };
+  }
 
-    // Permission check
-    const member = await msg.guild.fetchMember(msg.author.id);
-    if (!member.permissions.has(PermissionFlags.ManageGuild)) {
-      await msg.reply("You do not have permission to use this command.");
-    }
+  const token = await generateToken(message.guild.id);
 
-    const token = await generateToken(msg.guild.id);
-
-    await msg.author.send({
-      content: `Your token for the web UI is ${token}`,
-    });
+  await message.author.send({
+    content: `Your token for the web UI is ${token}`,
   });
 }
 

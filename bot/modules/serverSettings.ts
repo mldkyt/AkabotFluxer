@@ -3,9 +3,6 @@ import { authorizeRequest } from "../src/web.ts";
 import { prisma } from "../src/database.ts";
 import z from "zod";
 
-export function setup(client: Client) {
-}
-
 export async function webRequest(client: Client, req: Request, url: URL) {
   if (url.pathname !== "/api/server-settings") return;
 
@@ -38,9 +35,13 @@ export async function webRequest(client: Client, req: Request, url: URL) {
       return new Response("Invalid request", { status: 400 });
     }
 
-    const botChannel = guild.channels.filter((channel) => channel.type === 0).find((channel) => channel.id === result.data.botChannel);
-    if (!botChannel) {
-      return new Response("Bot channel was not found", { status: 400 });
+    if (result.data.botChannel !== "null") {
+      const botChannel = guild.channels.filter((channel) => channel.type === 0).find((channel) => channel.id === result.data.botChannel);
+      if (!botChannel) {
+        return new Response("Bot channel was not found", { status: 400 });
+      }
+    } else {
+      result.data.botChannel = "";
     }
 
     await prisma.serverSettings.upsert({
