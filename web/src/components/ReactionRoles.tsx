@@ -1,6 +1,7 @@
 import { Button, FieldError, Form, Input, type Key, Label, ListBox, Modal, Select, Surface, Table, TextField, toast, Typography, useOverlayState } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@heroui/react/skeleton";
+import { request } from "../util.ts";
 
 const ReactionRoles = () => {
   const [loading, setLoading] = useState(true);
@@ -17,36 +18,17 @@ const ReactionRoles = () => {
 
   useEffect(() => {
     const fetchRolesData = async () => {
-      try {
-        const iamRolesFetch = await fetch("/api/iam-roles", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        if (!iamRolesFetch.ok) {
-          toast.danger(await iamRolesFetch.text());
-          return;
-        }
-
-        const rolesFetch = await fetch("/api/roles", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        if (!rolesFetch.ok) {
-          toast.danger(await rolesFetch.text());
-          return;
-        }
-
-        setIamRoles(await iamRolesFetch.json());
-        setRoles(await rolesFetch.json());
-      } catch (e) {
-        toast.danger(`Error fetching data: ${e}`);
-      } finally {
-        setLoading(false);
+      const iamRolesFetch = await request("GET", "/api/iam-roles");
+      if (iamRolesFetch.ok) {
+        setIamRoles(iamRolesFetch.data);
       }
+
+      const rolesFetch = await request("GET", "/api/roles");
+      if (rolesFetch.ok) {
+        setRoles(rolesFetch.data);
+      }
+
+      setLoading(false);
     };
 
     fetchRolesData();
@@ -55,29 +37,12 @@ const ReactionRoles = () => {
   const addNew = async () => {
     if (!addNewRole) return;
 
-    try {
-      const res = await fetch("/api/iam-roles", {
-        method: "POST",
-        body: JSON.stringify({
-          roleId: addNewRole,
-          tag: addNewTag,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+    const res = await request("POST", "/api/iam-roles", { roleId: addNewRole, tag: addNewTag });
 
-      if (!res.ok) {
-        toast.danger(await res.text());
-        return;
-      }
-
+    if (res.ok) {
       setIamRoles((prev) => [...prev, { roleId: addNewRole.toString(), roleName: roles.find((r) => r.id === addNewRole.toString())?.name ?? "Unknown role", tag: addNewTag }]);
       setAddNewRole("");
       setAddNewTag("");
-    } catch (e) {
-      toast.danger(`Error adding new role: ${e}`);
     }
   };
 
@@ -90,24 +55,8 @@ const ReactionRoles = () => {
   };
 
   const finishEditRole = async () => {
-    try {
-      const res = await fetch("/api/iam-roles", {
-        method: "PATCH",
-        body: JSON.stringify({
-          roleId: editRole,
-          tag: editRoleTag,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      if (!res.ok) {
-        toast.danger(await res.text());
-        return;
-      }
-
+    const res = await request("PATCH", "/api/iam-roles", { roleId: editRole, tag: editRoleTag });
+    if (res.ok) {
       setIamRoles((prev) =>
         prev.map((x) => {
           if (x.roleId === editRole) {
@@ -118,38 +67,18 @@ const ReactionRoles = () => {
       );
       setEditRole("");
       setEditRoleTag("");
-    } catch (e) {
-      toast.danger(`An error occurred: ${e}`);
-      console.log(e);
     }
   };
 
   const deleteModalState = useOverlayState();
 
   const deleteRole = async () => {
-    try {
-      const res = await fetch(`/api/iam-roles`, {
-        method: "DELETE",
-        body: JSON.stringify({
-          id: deleteRoleId,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+    const res = await request("DELETE", "/api/iam-roles", { id: deleteRoleId });
 
-      if (!res.ok) {
-        toast.danger(await res.text());
-        return;
-      }
-
+    if (res.ok) {
       setIamRoles((prev) => prev.filter((x) => x.roleId !== deleteRoleId));
 
       deleteModalState.close();
-    } catch (e) {
-      toast.danger(`An error occurred: ${e}`);
-      console.log(e);
     }
   };
 

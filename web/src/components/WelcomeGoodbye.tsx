@@ -1,5 +1,6 @@
 import { Button, Description, Input, Label, ListBox, NumberField, Select, Switch, TextField, Typography } from "@heroui/react";
 import { useEffect, useState } from "react";
+import { request } from "../util.ts";
 
 const WelcomeGoodbye = () => {
   const [welcomeEnabled, setWelcomeEnabled] = useState(false);
@@ -19,96 +20,53 @@ const WelcomeGoodbye = () => {
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
 
   const fetchSettings = async () => {
-    const channelsFetch = await fetch("/api/text-channels", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const channelsFetch = await request("GET", "/api/text-channels");
     if (!channelsFetch.ok) {
-      console.log(channelsFetch);
-      alert("Failed to load channels....");
       return;
     }
+    setChannels(channelsFetch.data);
 
-    const fetchedChannelsJson = await channelsFetch.json() as { id: string; name: string }[];
-    setChannels(fetchedChannelsJson);
-
-    const welcomeGoodbyeFetch = await fetch("/api/welcome-goodbye", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const welcomeGoodbyeFetch = await request("GET", "/api/welcome-goodbye");
     if (!welcomeGoodbyeFetch.ok) {
-      console.log(welcomeGoodbyeFetch);
-      alert("Failed to load...");
       return;
     }
 
-    const fetchedJson = await welcomeGoodbyeFetch.json() as {
-      guildId: string;
-      welcomeEnabled: boolean;
-      welcomeChannel: string;
-      welcomeType: string;
-      welcomeTitle: string;
-      welcomeContent: string;
-      welcomeFirstGracePeriod: number;
-      welcomeSecondGracePeriod: number;
-      goodbyeEnabled: boolean;
-      goodbyeChannel: string;
-      goodbyeType: string;
-      goodbyeTitle: string;
-      goodbyeContent: string;
-    };
+    setWelcomeEnabled(welcomeGoodbyeFetch.data.welcomeEnabled);
+    setGoodbyeEnabled(welcomeGoodbyeFetch.data.goodbyeEnabled);
 
-    setWelcomeEnabled(fetchedJson.welcomeEnabled);
-    setGoodbyeEnabled(fetchedJson.goodbyeEnabled);
+    setWelcomeChannel(welcomeGoodbyeFetch.data.welcomeChannel);
+    setGoodbyeChannel(welcomeGoodbyeFetch.data.goodbyeChannel);
 
-    setWelcomeChannel(fetchedJson.welcomeChannel);
-    setGoodbyeChannel(fetchedJson.goodbyeChannel);
+    setWelcomeType(welcomeGoodbyeFetch.data.welcomeType as "embed" | "text");
+    setGoodbyeType(welcomeGoodbyeFetch.data.goodbyeType as "embed" | "text");
 
-    setWelcomeType(fetchedJson.welcomeType as "embed" | "text");
-    setGoodbyeType(fetchedJson.goodbyeType as "embed" | "text");
+    setWelcomeTitle(welcomeGoodbyeFetch.data.welcomeTitle);
+    setGoodbyeTitle(welcomeGoodbyeFetch.data.goodbyeTitle);
 
-    setWelcomeTitle(fetchedJson.welcomeTitle);
-    setGoodbyeTitle(fetchedJson.goodbyeTitle);
-
-    setWelcomeContent(fetchedJson.welcomeContent);
-    setGoodbyeContent(fetchedJson.goodbyeContent);
+    setWelcomeContent(welcomeGoodbyeFetch.data.welcomeContent);
+    setGoodbyeContent(welcomeGoodbyeFetch.data.goodbyeContent);
   };
 
   const saveSettings = async () => {
-    const req = await fetch("/api/welcome-goodbye", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({
-        welcomeEnabled,
-        goodbyeEnabled,
+    await request("POST", "/api/welcome-goodbye", {
+      welcomeEnabled,
+      goodbyeEnabled,
 
-        welcomeChannel,
-        goodbyeChannel,
+      welcomeChannel,
+      goodbyeChannel,
 
-        welcomeType,
-        goodbyeType,
+      welcomeType,
+      goodbyeType,
 
-        welcomeTitle,
-        goodbyeTitle,
+      welcomeTitle,
+      goodbyeTitle,
 
-        welcomeContent,
-        goodbyeContent,
+      welcomeContent,
+      goodbyeContent,
 
-        welcomeFirstGracePeriod,
-        welcomeSecondGracePeriod,
-      }),
+      welcomeFirstGracePeriod,
+      welcomeSecondGracePeriod,
     });
-
-    if (!req.ok) {
-      alert(await req.text());
-    }
   };
 
   useEffect(() => {

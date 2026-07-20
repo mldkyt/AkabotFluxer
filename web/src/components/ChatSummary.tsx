@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Label, ListBox, NumberField, Select, Skeleton, Switch, Table, toast, Typography } from "@heroui/react";
+import { request } from "../util.ts";
 
 const ChatSummary = () => {
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
@@ -15,63 +16,25 @@ const ChatSummary = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
-    const channelsFetch = await fetch("/api/text-channels", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    if (!channelsFetch.ok) {
-      console.log(channelsFetch);
-      toast.danger("Failed to load channels....");
-      return;
+    const channelsFetch = await request("GET", "/api/text-channels");
+    if (channelsFetch.ok) {
+      setChannels(channelsFetch.data);
     }
 
-    const fetchedChannelsJson = await channelsFetch.json() as { id: string; name: string }[];
-    setChannels(fetchedChannelsJson);
-
-    const settingsFetch = await fetch("/api/chat-summary", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    if (!settingsFetch.ok) {
-      console.log(settingsFetch);
-      toast.danger("failed to load chat summary settings");
-      return;
+    const settingsFetch = await request("GET", "/api/chat-summary");
+    if (settingsFetch.ok) {
+      setCountBots(settingsFetch.data.countBots);
+      setEnableExtraSummaries(settingsFetch.data.enableExtraSummaries);
+      setExtraSummariesRows(settingsFetch.data.extraSummariesRows);
+      setSummariesRows(settingsFetch.data.summariesRows);
+      setChatSummaryChannels(settingsFetch.data.channels);
     }
-
-    const fetchedSettingsJson = await settingsFetch.json();
-    setCountBots(fetchedSettingsJson.countBots);
-    setEnableExtraSummaries(fetchedSettingsJson.enableExtraSummaries);
-    setExtraSummariesRows(fetchedSettingsJson.extraSummariesRows);
-    setSummariesRows(fetchedSettingsJson.summariesRows);
-    setChatSummaryChannels(fetchedSettingsJson.channels);
 
     setLoading(false);
   };
 
   const saveData = async () => {
-    const res = await fetch("/api/chat-summary", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({
-        countBots,
-        enableExtraSummaries,
-        extraSummariesRows,
-        summariesRows,
-      }),
-    });
-
-    if (!res.ok) {
-      console.log(res);
-      alert("failed to save chat summary settings");
-      return;
-    }
+    await request("POST", "/api/chat-summary", { countBots, enableExtraSummaries, extraSummariesRows, summariesRows });
   };
 
   useEffect(() => {
@@ -79,42 +42,16 @@ const ChatSummary = () => {
   }, []);
 
   const addChannel = async () => {
-    const res = await fetch("/api/chat-summary/channels", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      method: "POST",
-      body: JSON.stringify({
-        channelId: addChannelId,
-      }),
-    });
+    const res = await request("POST", "/api/chat-summary/channels", { channelId: addChannelId });
 
     if (res.ok) {
       setChatSummaryChannels([...chatSummaryChannels, addChannelId]);
       setAddChannelId("");
-    } else {
-      alert(await res.text());
     }
   };
 
   const remChannel = async (channel: string) => {
-    const res = await fetch("/api/chat-summary/channels", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      method: "DELETE",
-      body: JSON.stringify({
-        channelId: channel,
-      }),
-    });
-
-    if (res.ok) {
-      setChatSummaryChannels(chatSummaryChannels.filter((ch) => ch !== channel));
-    } else {
-      alert(await res.text());
-    }
+    await request("DELETE", "/api/chat-summary/channels", { channelId: channel });
   };
 
   if (loading) {

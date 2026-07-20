@@ -2,7 +2,7 @@
 //   return false;
 // }
 
-// export async function runCommand(message: Message): Promise<void> {
+// export async function runCommand(prefix: string, message: Message): Promise<MessageSendOptions | undefined> {
 // }
 
 // export function setup(client: Client) {

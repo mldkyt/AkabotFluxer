@@ -1,6 +1,7 @@
 import { Typography } from "@heroui/react/typography";
 import { useEffect, useState } from "react";
 import { Button, FieldError, Input, type Key, Label, ListBox, Select, Switch, TextField } from "@heroui/react";
+import { request } from "../util.ts";
 
 const Main = () => {
   const [botChannel, setBotChannel] = useState<Key>("null");
@@ -10,50 +11,22 @@ const Main = () => {
   const [commandPrefix, setCommandPrefix] = useState("!");
 
   const getSettings = async () => {
-    const fetchChannels = await fetch("/api/text-channels", {
-      method: "GET",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
-
-    if (!fetchChannels.ok) {
-      alert(await fetchChannels.text());
+    const fetchChannels = await request("GET", "/api/text-channels");
+    if (fetchChannels.ok) {
+      setChannels(fetchChannels.data);
     }
 
-    const fetchServerSettings = await fetch("/api/server-settings", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
-
-    if (!fetchServerSettings.ok) {
-      alert(await fetchServerSettings.text());
+    const fetchServerSettings = await request("GET", "/api/server-settings");
+    if (fetchServerSettings.ok) {
+      setBotChannel(fetchServerSettings.data.botChannel);
+      setOnlyAllowCommandsInBotChannel(fetchServerSettings.data.onlyAllowCommandsInBotChannel);
+      setDeleteCommandMessage(fetchServerSettings.data.deleteCommandMessage);
+      setCommandPrefix(fetchServerSettings.data.prefix);
     }
-
-    const channels = await fetchChannels.json();
-    const serverSettings = await fetchServerSettings.json();
-
-    setBotChannel(serverSettings.botChannel);
-    setOnlyAllowCommandsInBotChannel(serverSettings.onlyAllowCommandsInBotChannel);
-    setDeleteCommandMessage(serverSettings.deleteCommandMessage);
-    setChannels(channels);
-    setCommandPrefix(serverSettings.prefix);
   };
 
   const setSettings = async () => {
-    const res = await fetch("/api/server-settings", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      body: JSON.stringify({
-        botChannel,
-        onlyAllowCommandsInBotChannel,
-        deleteCommandMessage,
-        prefix: commandPrefix,
-      }),
-    });
-
-    if (!res.ok) {
-      const error = await res.text();
-      alert(error);
-    }
+    await request("POST", "/api/server-settings", { botChannel, onlyAllowCommandsInBotChannel, deleteCommandMessage, prefix: commandPrefix });
   };
 
   useEffect(() => {

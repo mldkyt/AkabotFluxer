@@ -1,5 +1,6 @@
 import { Button, Label, ListBox, Select, Surface, Table, toast, Typography } from "@heroui/react";
 import { useEffect, useState } from "react";
+import { request } from "../util.ts";
 
 const RolesOnJoin = () => {
   const [rolesOnJoin, setRolesOnJoin] = useState<{ id: string; name: string }[]>([]);
@@ -8,37 +9,15 @@ const RolesOnJoin = () => {
   const [addNewRoleId, setAddNewRoleId] = useState("");
 
   const getData = async () => {
-    const resRolesOnJoin = await fetch("/api/roles-on-join", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-
-    if (!resRolesOnJoin.ok) {
-      toast.danger(await resRolesOnJoin.text());
-      return;
+    const rolesOnJoinFetch = await request("GET", "/api/roles-on-join");
+    if (rolesOnJoinFetch.ok) {
+      setRolesOnJoin(rolesOnJoinFetch.data);
     }
 
-    const resRoles = await fetch("/api/roles", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-
-    if (!resRoles.ok) {
-      toast.danger(await resRoles.text());
-      return;
+    const rolesFetch = await request("GET", "/api/roles");
+    if (rolesFetch.ok) {
+      setRoles(rolesFetch.data);
     }
-
-    const rolesOnJoinJson = await resRolesOnJoin.json();
-    const rolesJson = await resRoles.json();
-
-    setRolesOnJoin(rolesOnJoinJson);
-    setRoles(rolesJson);
   };
 
   useEffect(() => {
@@ -46,21 +25,8 @@ const RolesOnJoin = () => {
   }, []);
 
   const addNewRole = async () => {
-    const res = await fetch("/api/roles-on-join", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({
-        roleId: addNewRoleId,
-      }),
-    });
-
-    if (!res.ok) {
-      toast.danger(await res.text());
-      return;
-    }
+    const res = await request("POST", "/api/roles-on-join");
+    if (!res.ok) return;
 
     const addedRole = roles.find((r) => r.id === addNewRoleId);
     setAddNewRoleId("");
@@ -70,21 +36,12 @@ const RolesOnJoin = () => {
   };
 
   const deleteRole = async (roleId: string) => {
-    const res = await fetch("/api/roles-on-join", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({
-        roleId: roleId,
-      }),
+    const res = await request("DELETE", "/api/roles-on-join", {
+      roleId: roleId,
     });
 
-    if (!res.ok) {
-      toast.danger(await res.text());
-      return;
-    }
+    if (!res.ok) return;
+
     setAddNewRoleId("");
     setRolesOnJoin(rolesOnJoin.filter((r) => r.id !== roleId));
   };

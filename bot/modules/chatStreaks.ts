@@ -1,6 +1,37 @@
-import { Client, GuildMember, Message } from "@fluxerjs/core";
+import { Client, GuildMember, Message, MessageSendOptions } from "@fluxerjs/core";
 import { prisma } from "../src/database.ts";
 import { sendToBotChannelOrReply } from "../src/serverSettings.ts";
+
+export function checkCommand(prefix: string, message: Message): boolean {
+  return message.content === `${prefix}streak`;
+}
+
+export async function runCommand(prefix: string, message: Message): Promise<MessageSendOptions | undefined> {
+  if (!message.guild) return;
+
+  const chatStreak = await prisma.chatStreaks.upsert({
+    where: {
+      guildId_userId: {
+        guildId: message.guild.id,
+        userId: message.author.id,
+      },
+    },
+    create: {
+      guildId: message.guild.id,
+      userId: message.author.id,
+      lastMessageDate: new Date(),
+      streakStartDate: new Date(),
+    },
+    update: {},
+  });
+
+  if (new Date().getTime() - chatStreak.lastMessageDate.getTime() > 3600 * 24 * 1000) {
+    return { content: `Your streak is 0 days.` };
+  }
+
+  const days = Math.floor((chatStreak.lastMessageDate.getTime() - chatStreak.streakStartDate.getTime()) / (3600 * 24 * 1000));
+  return { content: `Your streak is ${days} days.` };
+}
 
 async function tickChatStreak(member: GuildMember): Promise<{ state: "stayed" } | { state: "updated"; newDays: number } | { state: "lost"; lastStreak: number }> {
   let chatStreak = await prisma.chatStreaks.upsert({
