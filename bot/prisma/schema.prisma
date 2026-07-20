@@ -160,3 +160,20 @@ model RolesOnJoin {
 
   @@id([guildId, roleId])
 }
+
+model VerificationSettings {
+  guildId   String  @id
+  enabled   Boolean @default(false)
+  roleId    String  @default("")
+  channelId String  @default("")
+  method    String  @default("code")
+}
+
+model VerificationTokens {
+  memberId        String
+  guildId         String
+  token           String
+  verifyMessageId String
+
+  @@id([memberId, guildId])
+}

@@ -5,6 +5,7 @@ import { Button, Input, Label, ListBox, Select, Toast, Typography } from "@herou
 import WelcomeGoodbye from "./components/WelcomeGoodbye.tsx";
 import ChatSummary from "./components/ChatSummary.tsx";
 import RolesOnJoin from "./components/RolesOnJoin.tsx";
+import Verification from "./components/Verification.tsx";
 
 const App = () => {
   const [authorized, setAuthorized] = useState(false);
@@ -120,6 +121,10 @@ const App = () => {
                   <Label>Roles on Join</Label>
                   <ListBox.ItemIndicator />
                 </ListBox.Item>
+                <ListBox.Item id="verification" textValue="Verification">
+                  <Label>Verification</Label>
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
               </ListBox>
             </Select.Popover>
           </Select>
@@ -128,6 +133,7 @@ const App = () => {
           {page === "welcome-goodbye" && <WelcomeGoodbye />}
           {page === "chat-summary" && <ChatSummary />}
           {page === "roles-on-join" && <RolesOnJoin />}
+          {page === "verification" && <Verification />}
         </>
       )}
     </div>
