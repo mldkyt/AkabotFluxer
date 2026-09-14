@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, NumberField, Select, Switch } from "./ui/index.ts";
+import { Button, Checkbox, NumberField, Select } from "./ui/index.ts";
 
 const ChatSummary = () => {
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
@@ -54,17 +54,19 @@ const ChatSummary = () => {
 
   return (
     <div>
-      <h2>Chat Summary</h2>
+      <h1>Chat Summary</h1>
+      <p>Configure automatic summaries of your server's conversations.</p>
+
       <div className="flex flex-col gap-2">
         <NumberField value={summariesRows} onChange={setSummariesRows} minValue={3} maxValue={10} label="Chat summary row count" />
 
-        <Switch checked={enableExtraSummaries} onChange={setEnableExtraSummaries} label="Enable monthly and yearly chat summaries" />
+        <Checkbox checked={enableExtraSummaries} onChange={setEnableExtraSummaries} label="Enable monthly and yearly chat summaries" />
 
         {enableExtraSummaries && (
           <NumberField value={extraSummariesRows} onChange={setExtraSummariesRows} minValue={3} maxValue={10} label="Monthly and yearly chat summary row count" />
         )}
 
-        <Switch checked={countBots} onChange={setCountBots} label="Count bots" />
+        <Checkbox checked={countBots} onChange={setCountBots} label="Count bots" />
 
         <Button onClick={saveData}>Save</Button>
       </div>

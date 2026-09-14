@@ -26,7 +26,7 @@ const RolesOnJoin = () => {
 
   const addNewRole = async () => {
     if (!addNewRoleId) return;
-    const res = await request("POST", "/api/roles-on-join");
+    const res = await request("POST", "/api/roles-on-join", { roleId: addNewRoleId });
 
     if (!res.ok) return;
 
@@ -50,7 +50,9 @@ const RolesOnJoin = () => {
 
   return (
     <div>
-      <h2>Roles on Join</h2>
+      <h1>Roles on Join</h1>
+      <p>Grant roles to new members automatically when they join your server.</p>
+
       <div className="flex flex-col gap-2">
         <Select value={addNewRoleId} onChange={setAddNewRoleId} label="Role">
           {roles.map((role) => (

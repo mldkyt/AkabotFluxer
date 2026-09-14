@@ -1,5 +1,4 @@
 export type PageKey =
-  | "home"
   | "server-settings"
   | "reaction-roles"
   | "welcome-goodbye"
@@ -10,7 +9,6 @@ export type PageKey =
   | "chat-revive";
 
 export const NAV_ITEMS: { key: PageKey; label: string }[] = [
-  { key: "home", label: "Home" },
   { key: "server-settings", label: "Server Settings" },
   { key: "reaction-roles", label: "Reaction Roles" },
   { key: "welcome-goodbye", label: "Welcome & Goodbye" },

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, Select, Switch } from "./ui/index.ts";
+import { Button, Checkbox, Select } from "./ui/index.ts";
 
 const Verification = () => {
   const [enabled, setEnabled] = useState(false);
@@ -40,9 +40,11 @@ const Verification = () => {
 
   return (
     <div>
-      <h2>Verification</h2>
+      <h1>Verification</h1>
+      <p>Verify members before they fully join your server.</p>
+
       <div className="flex flex-col gap-2 mt-4">
-        <Switch checked={enabled} onChange={setEnabled} label="Enable verification" />
+        <Checkbox checked={enabled} onChange={setEnabled} label="Enable verification" />
 
         <Select value={roleId} onChange={setRoleId} label="Verification Role">
           {roles.map((role) => (

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import ChatRevive from "./components/ChatRevive.tsx";
 import ChatSummary from "./components/ChatSummary.tsx";
-import Home from "./components/Home.tsx";
 import MeowBack from "./components/MeowBack.tsx";
 import ReactionRoles from "./components/ReactionRoles.tsx";
 import RolesOnJoin from "./components/RolesOnJoin.tsx";
@@ -14,7 +13,7 @@ import { Button, Input, ToastContainer } from "./components/ui/index.ts";
 const App = () => {
   const [authorized, setAuthorized] = useState(false);
   const [authorizing, setAuthorizing] = useState(false);
-  const [page, setPage] = useState<PageKey>("home");
+  const [page, setPage] = useState<PageKey>("server-settings");
   const [token, setToken] = useState("");
   const [authError, setAuthError] = useState("");
 
@@ -85,7 +84,6 @@ const App = () => {
           <Sidebar page={page} onNavigate={setPage} />
           <main className="flex-1 px-8 py-6">
             <div className="mx-auto max-w-4xl">
-              {page === "home" && <Home onNavigate={setPage} />}
               {page === "server-settings" && <ServerSettings />}
               {page === "reaction-roles" && <ReactionRoles />}
               {page === "welcome-goodbye" && <WelcomeGoodbye />}

@@ -85,7 +85,8 @@ const ChatRevive = () => {
 
   return (
     <div>
-      <h2>Chat Revive</h2>
+      <h1>Chat Revive</h1>
+      <p>Ping channels that go quiet to revive the conversation.</p>
       <div className="flex flex-col gap-2">
         <Select value={newChannelId} onChange={setNewChannelId} label="Channel">
           {channels.map((channel) => (

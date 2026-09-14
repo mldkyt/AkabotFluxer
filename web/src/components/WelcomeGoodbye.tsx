@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, Input, Label, NumberField, Select, Switch } from "./ui/index.ts";
+import { Button, Checkbox, Input, Label, NumberField, Select } from "./ui/index.ts";
 
 const WelcomeGoodbye = () => {
   const [welcomeEnabled, setWelcomeEnabled] = useState(false);
@@ -75,9 +75,11 @@ const WelcomeGoodbye = () => {
 
   return (
     <div>
-      <h2>Welcome & Goodbye</h2>
+      <h1>Welcome & Goodbye</h1>
+      <p>Greet new members and say goodbye to those who leave.</p>
+
       <div className="flex flex-col gap-2">
-        <Switch checked={welcomeEnabled} onChange={setWelcomeEnabled} label="Welcome Messages" />
+        <Checkbox checked={welcomeEnabled} onChange={setWelcomeEnabled} label="Welcome Messages" />
 
         {welcomeEnabled && (
           <>
@@ -111,7 +113,7 @@ const WelcomeGoodbye = () => {
           </>
         )}
 
-        <Switch checked={goodbyeEnabled} onChange={setGoodbyeEnabled} label="Goodbye Messages" />
+        <Checkbox checked={goodbyeEnabled} onChange={setGoodbyeEnabled} label="Goodbye Messages" />
 
         {goodbyeEnabled && (
           <>

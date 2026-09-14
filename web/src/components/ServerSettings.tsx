@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, Input, Label, Select, Switch } from "./ui/index.ts";
+import { Button, Checkbox, Input, Label, Select } from "./ui/index.ts";
 
 const ServerSettings = () => {
   const [botChannel, setBotChannel] = useState("null");
@@ -36,7 +36,9 @@ const ServerSettings = () => {
 
   return (
     <div>
-      <h2>Server Settings</h2>
+      <h1>Server Settings</h1>
+      <p>Configure the bot channel, command prefix, and how commands behave.</p>
+
       <div className="flex flex-col gap-2">
         <Select value={botChannel} onChange={setBotChannel} label="Bot Channel">
           <option value="null">No bot channel</option>
@@ -47,9 +49,9 @@ const ServerSettings = () => {
           ))}
         </Select>
 
-        <Switch checked={deleteCommandMessage} onChange={setDeleteCommandMessage} label="Delete command messages" />
+        <Checkbox checked={deleteCommandMessage} onChange={setDeleteCommandMessage} label="Delete command messages" />
 
-        <Switch checked={onlyAllowCommandsInBotChannel} onChange={setOnlyAllowCommandsInBotChannel} label="Only allow using commands in the bot channel" />
+        <Checkbox checked={onlyAllowCommandsInBotChannel} onChange={setOnlyAllowCommandsInBotChannel} label="Only allow using commands in the bot channel" />
 
         <div className="field">
           <Label>Command Prefix</Label>

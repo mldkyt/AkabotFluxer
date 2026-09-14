@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, Select, Switch } from "./ui/index.ts";
+import { Button, Checkbox, Select } from "./ui/index.ts";
 
 const MeowBack = () => {
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
@@ -104,12 +104,6 @@ const MeowBack = () => {
 
     if (!res.ok) return;
     setEditMeowBackChannelId("");
-    setEditMeowBackMeow(false);
-    setEditMeowBackWaf(false);
-    setEditMeowBackBark(false);
-    setEditMeowBackOwo(false);
-    setEditMeowBackColon3(false);
-    setEditMeowBackAwawa(false);
 
     setMeowBackSettings([...meowBackSettings.filter((x) => x.channelId !== editMeowBackChannelId), {
       channelId: editMeowBackChannelId,
@@ -134,7 +128,9 @@ const MeowBack = () => {
 
   return (
     <div>
-      <h2>Meow Back</h2>
+      <h1>Meow Back</h1>
+      <p>Make the bot react with meow, waf, bark, and more in specific channels.</p>
+
       <div className="flex flex-col gap-2">
         <Select value={newMeowBackId} onChange={setNewMeowBackId} label="Channel">
           {channels.map((channel) => (
@@ -144,12 +140,12 @@ const MeowBack = () => {
           ))}
         </Select>
 
-        <Switch checked={newMeowBackMeow} onChange={setNewMeowBackMeow} label="Meow in this channel" />
-        <Switch checked={newMeowBackWaf} onChange={setNewMeowBackWaf} label="Waf in this channel" />
-        <Switch checked={newMeowBackBark} onChange={setNewMeowBackBark} label="Bark in this channel" />
-        <Switch checked={newMeowBackColon3} onChange={setNewMeowBackColon3} label="Colon 3 in this channel" />
-        <Switch checked={newMeowBackOwo} onChange={setNewMeowBackOwo} label="Owo in this channel" />
-        <Switch checked={newMeowBackAwawa} onChange={setNewMeowBackAwawa} label="Awawa in this channel" />
+        <Checkbox checked={newMeowBackMeow} onChange={setNewMeowBackMeow} label="Meow in this channel" />
+        <Checkbox checked={newMeowBackWaf} onChange={setNewMeowBackWaf} label="Waf in this channel" />
+        <Checkbox checked={newMeowBackBark} onChange={setNewMeowBackBark} label="Bark in this channel" />
+        <Checkbox checked={newMeowBackColon3} onChange={setNewMeowBackColon3} label="Colon 3 in this channel" />
+        <Checkbox checked={newMeowBackOwo} onChange={setNewMeowBackOwo} label="Owo in this channel" />
+        <Checkbox checked={newMeowBackAwawa} onChange={setNewMeowBackAwawa} label="Awawa in this channel" />
 
         <Button onClick={createNewMeowBack} isDisabled={!newMeowBackId}>Add</Button>
       </div>
@@ -158,42 +154,42 @@ const MeowBack = () => {
         <div key={meowBackSetting.channelId}>
           <h2>{`Channel #${meowBackSetting.channelName}`}</h2>
           <div className="flex flex-col gap-2">
-            <Switch
+            <Checkbox
               checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackMeow : meowBackSetting.meow}
               onChange={setEditMeowBackMeow}
               disabled={meowBackSetting.channelId !== editMeowBackChannelId}
               label="Meow in this channel"
             />
 
-            <Switch
+            <Checkbox
               checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackWaf : meowBackSetting.waf}
               onChange={setEditMeowBackWaf}
               disabled={meowBackSetting.channelId !== editMeowBackChannelId}
               label="Waf in this channel"
             />
 
-            <Switch
+            <Checkbox
               checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackBark : meowBackSetting.bark}
               onChange={setEditMeowBackBark}
               disabled={meowBackSetting.channelId !== editMeowBackChannelId}
               label="Bark in this channel"
             />
 
-            <Switch
+            <Checkbox
               checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackColon3 : meowBackSetting.colon3}
               onChange={setEditMeowBackColon3}
               disabled={meowBackSetting.channelId !== editMeowBackChannelId}
               label="Colon 3 in this channel"
             />
 
-            <Switch
+            <Checkbox
               checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackOwo : meowBackSetting.owo}
               onChange={setEditMeowBackOwo}
               disabled={meowBackSetting.channelId !== editMeowBackChannelId}
               label="Owo in this channel"
             />
 
-            <Switch
+            <Checkbox
               checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackAwawa : meowBackSetting.awawa}
               onChange={setEditMeowBackAwawa}
               disabled={meowBackSetting.channelId !== editMeowBackChannelId}

@@ -77,7 +77,9 @@ const ReactionRoles = () => {
 
   return (
     <div>
-      <h2>Reaction Roles</h2>
+      <h1>Reaction Roles</h1>
+      <p>Let members grab roles by running !iam &lt;rolename&gt;.</p>
+
       <div className="flex flex-col gap-2">
         <Select value={addNewRole} onChange={setAddNewRole} label="Role">
           {roles.map((role) => (
