@@ -9,7 +9,7 @@ export function checkCommand(prefix: string, message: Message): boolean {
   return message.content === `${prefix}settings`;
 }
 
-export async function runCommand(message: Message): Promise<MessageSendOptions | undefined> {
+export async function runCommand(prefix: string, message: Message): Promise<MessageSendOptions | undefined> {
   if (!message.guild) return;
 
   // Permission check
@@ -20,9 +20,16 @@ export async function runCommand(message: Message): Promise<MessageSendOptions |
 
   const token = await generateToken(message.guild.id);
 
-  await message.author.send({
-    content: `Your token for the web UI is ${token}`,
-  });
+  try {
+    await message.author.send({
+      content: `Your token for the web UI is ${token}`,
+    });
+  } catch (e) {
+    console.error(e);
+    return { content: "Could not send the token in your DMs. Make sure your DMs are open, then run this command again." };
+  }
+
+  return { content: "Your web UI token has been sent in your DMs." };
 }
 
 export async function webRequest(client: Client, req: Request, url: URL) {
