@@ -20,6 +20,8 @@ FROM denoland/deno:debian AS bot
 
 WORKDIR /app
 
+ARG VERSION=dev
+
 RUN apt update
 RUN apt install -y bash
 
@@ -34,6 +36,7 @@ RUN deno run -A npm:prisma generate
 COPY bot/modules modules/.
 COPY bot/src src/.
 COPY bot/main.ts .
+RUN sed -i "s|@VERSION@|${VERSION}|g" main.ts
 COPY --from=web /app/dist dist/.
 COPY docker-entrypoint.sh .
 

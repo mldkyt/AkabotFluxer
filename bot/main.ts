@@ -4,22 +4,29 @@ import { prisma } from "./src/database.ts";
 import { performCommandMessageActions } from "./src/commands.ts";
 import { sendToBotChannelOrReply } from "./src/serverSettings.ts";
 
+let VERSION = "@VERSION@";
+if (VERSION === "@VERSION@") VERSION = "dev";
+
 const sentryDsn = Deno.env.get("SENTRY_DSN");
 
 if (sentryDsn) {
   Sentry.init({
     dsn: sentryDsn,
-
-    // Alternatively, use `process.env.npm_package_version` for a dynamic release version
-    // if your build tool supports it.
-    release: "akabot-fluxer@0.0.1",
-
+    release: `akabot-fluxer@${VERSION}`,
     integrations: [],
     tracesSampleRate: 0,
   });
 }
 
-const client = new Client({ intents: 0 });
+const client = new Client({
+  intents: 0,
+  presence: {
+    status: "online",
+    custom_status: {
+      text: `Akabot v${VERSION}`,
+    },
+  },
+});
 
 // Load modules under modules/
 
@@ -77,7 +84,7 @@ for (const file of Deno.readDirSync("./modules")) {
 }
 
 client.on("ready", () => {
-  console.log(`Logged in as ${client.user?.username}!`);
+  console.log(`Logged in as ${client.user?.username} (v${VERSION})!`);
 
   console.log("Registered", webRequestHandlers.length, "web request handlers.");
 });

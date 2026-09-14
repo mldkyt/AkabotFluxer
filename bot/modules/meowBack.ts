@@ -2,7 +2,7 @@
 //   return false;
 // }
 
-import { Client, Message, resolvePermissionsToBitfield, STATIC_CDN_URL } from "@fluxerjs/core";
+import { Client, Message } from "@fluxerjs/core";
 import { prisma } from "../src/database.ts";
 import { authorizeRequest } from "../src/web.ts";
 import z from "zod";
