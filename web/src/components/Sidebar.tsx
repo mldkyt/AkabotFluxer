@@ -7,7 +7,8 @@ export type PageKey =
   | "verification"
   | "meow-back"
   | "chat-revive"
-  | "counting";
+  | "counting"
+  | "leveling";
 
 export const NAV_ITEMS: { key: PageKey; label: string }[] = [
   { key: "server-settings", label: "Server Settings" },
@@ -19,6 +20,7 @@ export const NAV_ITEMS: { key: PageKey; label: string }[] = [
   { key: "meow-back", label: "Meow Back" },
   { key: "chat-revive", label: "Chat Revive" },
   { key: "counting", label: "Counting" },
+  { key: "leveling", label: "Leveling" },
 ];
 
 interface SidebarProps {

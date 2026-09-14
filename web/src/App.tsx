@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ChatRevive from "./components/ChatRevive.tsx";
 import ChatSummary from "./components/ChatSummary.tsx";
 import Counting from "./components/Counting.tsx";
+import Leveling from "./components/Leveling.tsx";
 import MeowBack from "./components/MeowBack.tsx";
 import ReactionRoles from "./components/ReactionRoles.tsx";
 import RolesOnJoin from "./components/RolesOnJoin.tsx";
@@ -96,6 +97,7 @@ const App = () => {
                 {page === "meow-back" && <MeowBack />}
                 {page === "chat-revive" && <ChatRevive />}
                 {page === "counting" && <Counting />}
+                {page === "leveling" && <Leveling />}
               </div>
             </main>
           </div>

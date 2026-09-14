@@ -224,3 +224,42 @@ model CountingState {
   lastUserId    String  @default("")
   lastMessageId String  @default("")
 }
+
+model LevelingSettings {
+  guildId              String  @id
+  enabled              Boolean @default(false)
+  xpPerMessage         Int     @default(3)
+  xpPerLevel           Int     @default(500)
+  weeklyBoostEnabled   Boolean @default(false)
+  weeklyBoostStartDay  Int     @default(5)
+  weeklyBoostStartHour Int     @default(15)
+  weeklyBoostEndDay    Int     @default(1)
+  weeklyBoostEndHour   Int     @default(3)
+}
+
+model LevelingStats {
+  guildId String
+  userId  String
+  xp      Int     @default(0)
+
+  @@id([guildId, userId])
+}
+
+model LevelingRoleRewards {
+  id      Int    @id @default(autoincrement())
+  guildId String
+  level   Int
+  roleId  String
+
+  @@unique([guildId, level])
+}
+
+model LevelingMultipliers {
+  id         Int    @id @default(autoincrement())
+  guildId    String
+  multiplier Float
+  startMonth Int
+  startDay   Int
+  endMonth   Int
+  endDay     Int
+}
