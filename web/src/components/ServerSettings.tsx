@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Button, FieldError, Input, type Key, Label, ListBox, Select, Switch, TextField } from "@heroui/react";
 import { request } from "../util.ts";
 
-const Main = () => {
+const ServerSettings = () => {
   const [botChannel, setBotChannel] = useState<Key>("null");
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
   const [deleteCommandMessage, setDeleteCommandMessage] = useState(false);
@@ -35,7 +35,7 @@ const Main = () => {
 
   return (
     <div>
-      <Typography type="h1">Welcome to Akabot</Typography>
+      <Typography type="h1">Server Settings</Typography>
 
       <Typography type="h2">Basic server settings</Typography>
 
@@ -105,4 +105,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default ServerSettings;
