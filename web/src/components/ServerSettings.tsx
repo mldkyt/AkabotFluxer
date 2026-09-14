@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, FieldError, Input, Label, Select, Switch } from "./ui/index.ts";
+import { Button, Input, Label, Select, Switch } from "./ui/index.ts";
 
 const ServerSettings = () => {
   const [botChannel, setBotChannel] = useState("null");
@@ -36,12 +36,9 @@ const ServerSettings = () => {
 
   return (
     <div>
-      <h1>Server Settings</h1>
-
-      <h2>Basic server settings</h2>
-
+      <h2>Server Settings</h2>
       <div className="flex flex-col gap-2">
-        <Select value={botChannel} onChange={(x) => setBotChannel(x)} label="Bot Channel">
+        <Select value={botChannel} onChange={setBotChannel} label="Bot Channel">
           <option value="null">No bot channel</option>
           {channels.map((channel) => (
             <option key={channel.id} value={channel.id}>
@@ -59,11 +56,10 @@ const ServerSettings = () => {
           <Input
             type="text"
             value={commandPrefix}
-            onChange={(x) => setCommandPrefix(x)}
+            onChange={setCommandPrefix}
             minLength={1}
             maxLength={5}
           />
-          {prefixError && <FieldError>{prefixError}</FieldError>}
         </div>
 
         <Button onClick={setSettings} isDisabled={!!prefixError}>

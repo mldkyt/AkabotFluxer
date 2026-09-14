@@ -1,36 +1,30 @@
 import type { PageKey } from "./Sidebar.tsx";
-import { Button, Card } from "./ui/index.ts";
+import { Button } from "./ui/index.ts";
 
 interface HomeProps {
   onNavigate: (key: PageKey) => void;
 }
 
-const MODULES: { key: PageKey; title: string; description: string }[] = [
-  { key: "server-settings", title: "Server Settings", description: "Bot channel, command prefix, and command behavior." },
-  { key: "reaction-roles", title: "Reaction Roles", description: "Let members grab roles by running !iam." },
-  { key: "welcome-goodbye", title: "Welcome & Goodbye", description: "Greet new members and say goodbye to leavers." },
-  { key: "chat-summary", title: "Chat Summary", description: "Summarize your server's conversations." },
-  { key: "roles-on-join", title: "Roles on Join", description: "Grant roles to new members automatically." },
-  { key: "verification", title: "Verification", description: "Verify members before they fully join." },
-  { key: "meow-back", title: "Meow Back", description: "Meow back when someone says meow." },
-  { key: "chat-revive", title: "Chat Revive", description: "Revive conversations that went quiet." },
+const MODULES: { key: PageKey; title: string }[] = [
+  { key: "server-settings", title: "Server Settings" },
+  { key: "reaction-roles", title: "Reaction Roles" },
+  { key: "welcome-goodbye", title: "Welcome & Goodbye" },
+  { key: "chat-summary", title: "Chat Summary" },
+  { key: "roles-on-join", title: "Roles on Join" },
+  { key: "verification", title: "Verification" },
+  { key: "meow-back", title: "Meow Back" },
+  { key: "chat-revive", title: "Chat Revive" },
 ];
 
 const Home = ({ onNavigate }: HomeProps) => {
   return (
     <div>
-      <h1>Welcome to Akabot</h1>
-      <p>Admin panel for your Fluxer Discord bot. Pick a module from the sidebar to get started.</p>
-
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <h2>Welcome to Akabot</h2>
+      <div className="flex flex-col gap-2 max-w-sm">
         {MODULES.map((mod) => (
-          <Card key={mod.key} hover className="flex flex-col gap-2 p-4">
-            <h3>{mod.title}</h3>
-            <p>{mod.description}</p>
-            <Button className="mt-auto w-fit" variant="secondary" onClick={() => onNavigate(mod.key)}>
-              Open
-            </Button>
-          </Card>
+          <Button key={mod.key} variant="secondary" onClick={() => onNavigate(mod.key)}>
+            {mod.title}
+          </Button>
         ))}
       </div>
     </div>

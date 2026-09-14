@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, Card, Select, Switch } from "./ui/index.ts";
+import { Button, Select, Switch } from "./ui/index.ts";
 
 const MeowBack = () => {
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
@@ -134,9 +134,8 @@ const MeowBack = () => {
 
   return (
     <div>
-      <h1>Meow back</h1>
-
-      <Card className="flex flex-col gap-2 p-2 my-2">
+      <h2>Meow Back</h2>
+      <div className="flex flex-col gap-2">
         <Select value={newMeowBackId} onChange={setNewMeowBackId} label="Channel">
           {channels.map((channel) => (
             <option key={channel.id} value={channel.id}>
@@ -153,59 +152,59 @@ const MeowBack = () => {
         <Switch checked={newMeowBackAwawa} onChange={setNewMeowBackAwawa} label="Awawa in this channel" />
 
         <Button onClick={createNewMeowBack} isDisabled={!newMeowBackId}>Add</Button>
-      </Card>
-
-      <h2>Existing meow back settings</h2>
+      </div>
 
       {meowBackSettings.map((meowBackSetting) => (
-        <Card key={meowBackSetting.channelId} className="flex flex-col gap-2 p-2 my-2">
-          <h3>{`Channel #${meowBackSetting.channelName}`}</h3>
-          <Switch
-            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackMeow : meowBackSetting.meow}
-            onChange={setEditMeowBackMeow}
-            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
-            label="Meow in this channel"
-          />
+        <div key={meowBackSetting.channelId}>
+          <h2>{`Channel #${meowBackSetting.channelName}`}</h2>
+          <div className="flex flex-col gap-2">
+            <Switch
+              checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackMeow : meowBackSetting.meow}
+              onChange={setEditMeowBackMeow}
+              disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+              label="Meow in this channel"
+            />
 
-          <Switch
-            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackWaf : meowBackSetting.waf}
-            onChange={setEditMeowBackWaf}
-            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
-            label="Waf in this channel"
-          />
+            <Switch
+              checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackWaf : meowBackSetting.waf}
+              onChange={setEditMeowBackWaf}
+              disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+              label="Waf in this channel"
+            />
 
-          <Switch
-            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackBark : meowBackSetting.bark}
-            onChange={setEditMeowBackBark}
-            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
-            label="Bark in this channel"
-          />
+            <Switch
+              checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackBark : meowBackSetting.bark}
+              onChange={setEditMeowBackBark}
+              disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+              label="Bark in this channel"
+            />
 
-          <Switch
-            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackColon3 : meowBackSetting.colon3}
-            onChange={setEditMeowBackColon3}
-            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
-            label="Colon 3 in this channel"
-          />
+            <Switch
+              checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackColon3 : meowBackSetting.colon3}
+              onChange={setEditMeowBackColon3}
+              disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+              label="Colon 3 in this channel"
+            />
 
-          <Switch
-            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackOwo : meowBackSetting.owo}
-            onChange={setEditMeowBackOwo}
-            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
-            label="Owo in this channel"
-          />
+            <Switch
+              checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackOwo : meowBackSetting.owo}
+              onChange={setEditMeowBackOwo}
+              disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+              label="Owo in this channel"
+            />
 
-          <Switch
-            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackAwawa : meowBackSetting.awawa}
-            onChange={setEditMeowBackAwawa}
-            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
-            label="Awawa in this channel"
-          />
+            <Switch
+              checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackAwawa : meowBackSetting.awawa}
+              onChange={setEditMeowBackAwawa}
+              disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+              label="Awawa in this channel"
+            />
 
-          {editMeowBackChannelId !== meowBackSetting.channelId && <Button onClick={() => startEditing(meowBackSetting.channelId)} isDisabled={editMeowBackChannelId.length > 0}>Edit</Button>}
-          {editMeowBackChannelId === meowBackSetting.channelId && <Button onClick={finishEditing}>Save</Button>}
-          <Button variant="danger" onClick={async () => await deleteMeowBack(meowBackSetting.channelId)}>Delete</Button>
-        </Card>
+            {editMeowBackChannelId !== meowBackSetting.channelId && <Button onClick={() => startEditing(meowBackSetting.channelId)} isDisabled={editMeowBackChannelId.length > 0}>Edit</Button>}
+            {editMeowBackChannelId === meowBackSetting.channelId && <Button onClick={finishEditing}>Save</Button>}
+            <Button variant="danger" onClick={async () => await deleteMeowBack(meowBackSetting.channelId)}>Delete</Button>
+          </div>
+        </div>
       ))}
     </div>
   );

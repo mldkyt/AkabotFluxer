@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, NumberField, Select, Skeleton, Switch } from "./ui/index.ts";
+import { Button, NumberField, Select, Switch } from "./ui/index.ts";
 
 const ChatSummary = () => {
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
@@ -12,8 +12,6 @@ const ChatSummary = () => {
   const [countBots, setCountBots] = useState(false);
 
   const [addChannelId, setAddChannelId] = useState("");
-
-  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     const channelsFetch = await request("GET", "/api/text-channels");
@@ -29,8 +27,6 @@ const ChatSummary = () => {
       setSummariesRows(settingsFetch.data.summariesRows);
       setChatSummaryChannels(settingsFetch.data.channels);
     }
-
-    setLoading(false);
   };
 
   const saveData = async () => {
@@ -56,30 +52,9 @@ const ChatSummary = () => {
     await request("DELETE", "/api/chat-summary/channels", { channelId: channel });
   };
 
-  if (loading) {
-    return (
-      <div>
-        <h1>Chat Summary</h1>
-
-        <Skeleton className="w-full h-12 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-full h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-full h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-full h-8 m-2" />
-        <Skeleton className="w-full h-24 m-2" />
-      </div>
-    );
-  }
-
   return (
     <div>
-      <h1>Chat Summary</h1>
-
-      <h2>Settings</h2>
-
+      <h2>Chat Summary</h2>
       <div className="flex flex-col gap-2">
         <NumberField value={summariesRows} onChange={setSummariesRows} minValue={3} maxValue={10} label="Chat summary row count" />
 
@@ -106,7 +81,7 @@ const ChatSummary = () => {
         <Button onClick={addChannel} isDisabled={!addChannelId}>Add channel</Button>
       </div>
 
-      <table className="mt-4">
+      <table>
         <thead>
           <tr>
             <th>Channel</th>

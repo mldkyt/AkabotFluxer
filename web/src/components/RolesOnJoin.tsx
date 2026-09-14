@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, Card, Select } from "./ui/index.ts";
+import { Button, Select } from "./ui/index.ts";
 
 const RolesOnJoin = () => {
   const [rolesOnJoin, setRolesOnJoin] = useState<{ id: string; name: string }[]>([]);
@@ -50,9 +50,8 @@ const RolesOnJoin = () => {
 
   return (
     <div>
-      <h1>Roles on Join</h1>
-
-      <Card className="flex flex-col gap-2 p-2 my-2">
+      <h2>Roles on Join</h2>
+      <div className="flex flex-col gap-2">
         <Select value={addNewRoleId} onChange={setAddNewRoleId} label="Role">
           {roles.map((role) => (
             <option key={role.id} value={role.id}>
@@ -61,7 +60,7 @@ const RolesOnJoin = () => {
           ))}
         </Select>
         <Button onClick={addNewRole} isDisabled={!addNewRoleId}>Add</Button>
-      </Card>
+      </div>
 
       <table>
         <thead>

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, Description, Select, Skeleton, Switch } from "./ui/index.ts";
+import { Button, Select, Switch } from "./ui/index.ts";
 
 const Verification = () => {
-  const [loading, setLoading] = useState(true);
   const [enabled, setEnabled] = useState(false);
   const [roleId, setRoleId] = useState("");
   const [channelId, setChannelId] = useState("");
@@ -25,8 +24,6 @@ const Verification = () => {
     setEnabled(settingsFetch.data.enabled);
     setRoleId(settingsFetch.data.roleId);
     setChannelId(settingsFetch.data.channelId);
-
-    setLoading(false);
   };
 
   const saveData = async () => {
@@ -41,28 +38,9 @@ const Verification = () => {
     fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <div>
-        <h1>!iam Roles</h1>
-
-        <Skeleton className="w-full h-12 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-full h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-full h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-full h-8 m-2" />
-        <Skeleton className="w-full h-24 m-2" />
-      </div>
-    );
-  }
-
   return (
     <div>
-      <h1>Verification</h1>
-
+      <h2>Verification</h2>
       <div className="flex flex-col gap-2 mt-4">
         <Switch checked={enabled} onChange={setEnabled} label="Enable verification" />
 
@@ -73,7 +51,6 @@ const Verification = () => {
             </option>
           ))}
         </Select>
-        <Description>Grant this role when verification is successful</Description>
 
         <Select value={channelId} onChange={setChannelId} label="Verification Channel">
           {channels.map((ch) => (
@@ -82,9 +59,6 @@ const Verification = () => {
             </option>
           ))}
         </Select>
-        <Description>
-          Use this channel for all transactional messages for verification (bot must have send messages permission in here)
-        </Description>
 
         <Button onClick={saveData}>Save</Button>
       </div>

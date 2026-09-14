@@ -9,7 +9,7 @@ import ServerSettings from "./components/ServerSettings.tsx";
 import Sidebar, { type PageKey } from "./components/Sidebar.tsx";
 import Verification from "./components/Verification.tsx";
 import WelcomeGoodbye from "./components/WelcomeGoodbye.tsx";
-import { Button, Card, Input, ToastContainer } from "./components/ui/index.ts";
+import { Button, Input, ToastContainer } from "./components/ui/index.ts";
 
 const App = () => {
   const [authorized, setAuthorized] = useState(false);
@@ -60,21 +60,16 @@ const App = () => {
       <ToastContainer />
       {!authorized ? (
         <div className="flex min-h-screen items-center justify-center p-4">
-          <Card className="w-full max-w-sm flex flex-col gap-4 rounded-lg p-8">
-            <h1 className="text-center">Akabot Admin</h1>
-            <p className="text-center">
-              Log in with the token from the settings command in Discord.
-            </p>
-            <div className="field">
-              <Input
-                type="text"
-                value={token}
-                onChange={(e) => setToken(e)}
-                placeholder="Token"
-                disabled={authorizing}
-                className="w-full"
-              />
-            </div>
+          <div className="flex w-full max-w-sm flex-col gap-4">
+            <h2 className="text-center">Akabot Admin</h2>
+            <Input
+              type="text"
+              value={token}
+              onChange={(e) => setToken(e)}
+              placeholder="Token"
+              disabled={authorizing}
+              className="w-full"
+            />
             <Button
               onClick={() => handleLogin(token)}
               isDisabled={authorizing || token.length === 0}
@@ -82,8 +77,8 @@ const App = () => {
             >
               Log in
             </Button>
-            {authError && <p className="field-error">An error occurred: {authError}</p>}
-          </Card>
+            {authError && <span className="field-error">An error occurred: {authError}</span>}
+          </div>
         </div>
       ) : (
         <div className="flex">

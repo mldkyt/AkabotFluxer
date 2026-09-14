@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, Description, Input, Label, NumberField, Select, Switch } from "./ui/index.ts";
+import { Button, Input, Label, NumberField, Select, Switch } from "./ui/index.ts";
 
 const WelcomeGoodbye = () => {
   const [welcomeEnabled, setWelcomeEnabled] = useState(false);
@@ -74,10 +74,8 @@ const WelcomeGoodbye = () => {
   }, []);
 
   return (
-    <>
-      <h1>Welcome & Goodbye</h1>
-      <p>Welcome new users and say goodbye to those who leave!</p>
-
+    <div>
+      <h2>Welcome & Goodbye</h2>
       <div className="flex flex-col gap-2">
         <Switch checked={welcomeEnabled} onChange={setWelcomeEnabled} label="Welcome Messages" />
 
@@ -108,29 +106,8 @@ const WelcomeGoodbye = () => {
               <Input type="text" value={welcomeContent} onChange={setWelcomeContent} minLength={1} maxLength={50} />
             </div>
 
-            <NumberField
-              value={welcomeFirstGracePeriod}
-              onChange={setWelcomeFirstGracePeriod}
-              minValue={0}
-              maxValue={60}
-              label="First Grace Period"
-            />
-            <Description>
-              The grace period in seconds between joining and before the welcome message is sent. You can set this to a higher value to prevent sending a welcome message when the member gets
-              kicked by a bot.
-            </Description>
-
-            <NumberField
-              value={welcomeSecondGracePeriod}
-              onChange={setWelcomeSecondGracePeriod}
-              minValue={0}
-              maxValue={600}
-              label="Second Grace Period"
-            />
-            <Description>
-              The grace period in seconds between the message being sent and before making the welcome message permanent. If the member leaves the server during this period, the welcome message
-              is deleted and the goodbye message is not created.
-            </Description>
+            <NumberField value={welcomeFirstGracePeriod} onChange={setWelcomeFirstGracePeriod} minValue={0} maxValue={60} label="First Grace Period" />
+            <NumberField value={welcomeSecondGracePeriod} onChange={setWelcomeSecondGracePeriod} minValue={0} maxValue={600} label="Second Grace Period" />
           </>
         )}
 
@@ -146,7 +123,7 @@ const WelcomeGoodbye = () => {
               ))}
             </Select>
 
-            <Select value={goodbyeType} onChange={(x) => setGoodbyeType(x as "embed" | "text")} label="Welcome Message Type">
+            <Select value={goodbyeType} onChange={(x) => setGoodbyeType(x as "embed" | "text")} label="Goodbye Message Type">
               <option value="embed">Embed</option>
               <option value="text">Text</option>
             </Select>
@@ -167,7 +144,7 @@ const WelcomeGoodbye = () => {
 
         <Button onClick={saveSettings}>Save settings</Button>
       </div>
-    </>
+    </div>
   );
 };
 

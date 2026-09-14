@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, Description, Input, Label, NumberField, Select } from "./ui/index.ts";
+import { Button, Input, Label, NumberField, Select } from "./ui/index.ts";
 
 const ChatRevive = () => {
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
@@ -85,10 +85,7 @@ const ChatRevive = () => {
 
   return (
     <div>
-      <h1>Chat Revive</h1>
-      <p>Ping a channel when it goes quiet. The bot sends the revive message once and waits for real activity before pinging again.</p>
-
-      <h2>Add channel</h2>
+      <h2>Chat Revive</h2>
       <div className="flex flex-col gap-2">
         <Select value={newChannelId} onChange={setNewChannelId} label="Channel">
           {channels.map((channel) => (
@@ -103,7 +100,6 @@ const ChatRevive = () => {
         <div className="field">
           <Label>Revive message</Label>
           <Input type="text" value={newMessage} onChange={setNewMessage} maxLength={2000} />
-          <Description>Use {"{role}"} to mention the configured role.</Description>
         </div>
 
         <Select value={newRoleId} onChange={setNewRoleId} label="Role to mention (optional)">
@@ -120,7 +116,7 @@ const ChatRevive = () => {
 
       <h2>Configured channels</h2>
 
-      <table className="mt-4">
+      <table>
         <thead>
           <tr>
             <th>Channel</th>

@@ -138,11 +138,6 @@ label {
     margin-bottom: 4px;
 }
 
-.field-description {
-    font-size: 12px;
-    color: var(--text-dim);
-}
-
 .field-error {
     font-size: 12px;
     color: var(--red);
@@ -300,20 +295,6 @@ textarea {
     background-color: var(--bg-muted);
 }
 
-/* Cards / surfaces */
-.card {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    margin: 8px 0;
-    background-color: var(--bg-surface);
-}
-
-.card--hover:hover {
-    border-color: var(--accent);
-    background-color: rgba(137, 180, 250, 0.05);
-}
-
 /* Tables */
 table {
     width: 100%;
@@ -382,57 +363,6 @@ tr:hover td {
     max-width: 360px;
 }
 
-/* Skeleton */
-.skeleton {
-    display: inline-block;
-    background-color: var(--bg-muted);
-    border-radius: var(--radius-sm);
-    animation: skeleton-pulse 1.4s ease-in-out infinite;
-}
-
-@keyframes skeleton-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-/* Modal */
-.modal-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 16px;
-}
-
-.modal {
-    width: 100%;
-    max-width: 420px;
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.modal-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-bright);
-    margin: 0;
-}
-
-.modal-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-/* Sidebar */
 .sidebar-header {
     padding: 20px 16px 12px;
     border-bottom: 1px solid var(--border);

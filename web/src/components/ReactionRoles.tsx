@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
-import { Button, Card, FieldError, Input, Label, Modal, Select, Skeleton } from "./ui/index.ts";
+import { Button, Input, Label, Select } from "./ui/index.ts";
 
 const ReactionRoles = () => {
-  const [loading, setLoading] = useState(true);
   const [iamRoles, setIamRoles] = useState<{ roleId: string; roleName: string; tag: string }[]>([]);
   const [roles, setRoles] = useState<{ name: string; id: string }[]>([]);
 
@@ -12,9 +11,6 @@ const ReactionRoles = () => {
 
   const [editRole, setEditRole] = useState("");
   const [editRoleTag, setEditRoleTag] = useState("");
-
-  const [deleteRoleId, setDeleteRoleId] = useState("");
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const addRoleError = iamRoles.find((role) => role.roleId === addNewRole) ? "This role already has a tag" : "";
   const addTagError = iamRoles.find((role) => role.tag === addNewTag) ? "This tag is already used" : !/^[a-z0-9]+$/.test(addNewTag) ? "One word is required" : "";
@@ -30,8 +26,6 @@ const ReactionRoles = () => {
       if (rolesFetch.ok) {
         setRoles(rolesFetch.data);
       }
-
-      setLoading(false);
     };
 
     fetchRolesData();
@@ -73,43 +67,18 @@ const ReactionRoles = () => {
     }
   };
 
-  const deleteRole = async () => {
-    const res = await request("DELETE", "/api/iam-roles", { id: deleteRoleId });
+  const deleteRole = async (roleId: string) => {
+    const res = await request("DELETE", "/api/iam-roles", { id: roleId });
 
     if (res.ok) {
-      setIamRoles((prev) => prev.filter((x) => x.roleId !== deleteRoleId));
-      setDeleteModalOpen(false);
+      setIamRoles((prev) => prev.filter((x) => x.roleId !== roleId));
     }
   };
 
-  if (loading) {
-    return (
-      <div>
-        <h1>!iam Roles</h1>
-
-        <Skeleton className="w-full h-12 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-full h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-full h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-full h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-36 h-8 m-2" />
-        <Skeleton className="w-full h-8 m-2" />
-      </div>
-    );
-  }
-
   return (
     <div>
-      <h1>!iam Roles</h1>
-      <p>
-        Here you can configure roles that users can grab by running !iam &lt;rolename&gt;.
-      </p>
-      <Card className="flex flex-col gap-2 p-4 my-2">
-        <h2>Add an !iam role</h2>
+      <h2>Reaction Roles</h2>
+      <div className="flex flex-col gap-2">
         <Select value={addNewRole} onChange={setAddNewRole} label="Role">
           {roles.map((role) => (
             <option key={role.id} value={role.id}>
@@ -117,7 +86,6 @@ const ReactionRoles = () => {
             </option>
           ))}
         </Select>
-        {addRoleError && <FieldError>{addRoleError}</FieldError>}
 
         <div className="field">
           <Label>Trigger keyword</Label>
@@ -126,19 +94,17 @@ const ReactionRoles = () => {
             value={addNewTag}
             onChange={setAddNewTag}
           />
-          {addTagError && <FieldError>{addTagError}</FieldError>}
         </div>
 
         <Button
-          className="mt-4"
           isDisabled={!addNewRole || !addNewTag || !!addRoleError || !!addTagError}
           onClick={addNew}
         >
           Add
         </Button>
-      </Card>
+      </div>
 
-      <table className="mt-4">
+      <table>
         <thead>
           <tr>
             <th>Role</th>
@@ -161,8 +127,9 @@ const ReactionRoles = () => {
                 <Button
                   variant="danger"
                   onClick={() => {
-                    setDeleteRoleId(iamRole.roleId);
-                    setDeleteModalOpen(true);
+                    if (confirm("Delete this !iam role? This action is irreversible.")) {
+                      deleteRole(iamRole.roleId);
+                    }
                   }}
                 >
                   Delete
@@ -172,20 +139,6 @@ const ReactionRoles = () => {
           ))}
         </tbody>
       </table>
-
-      <Modal
-        isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        title="Delete !iam role?"
-        actions={
-          <>
-            <Button onClick={deleteRole} variant="danger">Delete</Button>
-            <Button variant="secondary" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
-          </>
-        }
-      >
-        This action is irreversible, you'll have to re-add the role manually.
-      </Modal>
     </div>
   );
 };
