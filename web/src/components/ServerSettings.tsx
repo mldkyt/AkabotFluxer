@@ -1,14 +1,15 @@
-import { Typography } from "@heroui/react/typography";
 import { useEffect, useState } from "react";
-import { Button, FieldError, Input, type Key, Label, ListBox, Select, Switch, TextField } from "@heroui/react";
 import { request } from "../util.ts";
+import { Button, FieldError, Input, Label, Select, Switch } from "./ui/index.ts";
 
 const ServerSettings = () => {
-  const [botChannel, setBotChannel] = useState<Key>("null");
+  const [botChannel, setBotChannel] = useState("null");
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
   const [deleteCommandMessage, setDeleteCommandMessage] = useState(false);
   const [onlyAllowCommandsInBotChannel, setOnlyAllowCommandsInBotChannel] = useState(false);
   const [commandPrefix, setCommandPrefix] = useState("!");
+
+  const prefixError = commandPrefix.length < 1 ? "The command prefix must be at least 1 letter" : commandPrefix.length > 5 ? "Command prefix is too long" : "";
 
   const getSettings = async () => {
     const fetchChannels = await request("GET", "/api/text-channels");
@@ -35,71 +36,39 @@ const ServerSettings = () => {
 
   return (
     <div>
-      <Typography type="h1">Server Settings</Typography>
+      <h1>Server Settings</h1>
 
-      <Typography type="h2">Basic server settings</Typography>
+      <h2>Basic server settings</h2>
 
       <div className="flex flex-col gap-2">
-        <Select
-          value={botChannel}
-          onChange={(x) => setBotChannel(x?.toString() ?? "null")}
-        >
-          <Label>Bot Channel</Label>
-          <Select.Trigger>
-            <Select.Value />
-            <Select.Indicator />
-          </Select.Trigger>
-          <Select.Popover>
-            <ListBox>
-              <ListBox.Item key="null" id="null" textValue="No bot channel">
-                No bot channel
-                <ListBox.ItemIndicator />
-              </ListBox.Item>
-              {channels.map((channel) => (
-                <ListBox.Item key={channel.id} id={channel.id} textValue={channel.name}>
-                  #{channel.name}
-                  <ListBox.ItemIndicator />
-                </ListBox.Item>
-              ))}
-            </ListBox>
-          </Select.Popover>
+        <Select value={botChannel} onChange={(x) => setBotChannel(x)} label="Bot Channel">
+          <option value="null">No bot channel</option>
+          {channels.map((channel) => (
+            <option key={channel.id} value={channel.id}>
+              #{channel.name}
+            </option>
+          ))}
         </Select>
 
-        <Switch isSelected={deleteCommandMessage} onChange={setDeleteCommandMessage}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Delete command messages
-          </Switch.Content>
-        </Switch>
+        <Switch checked={deleteCommandMessage} onChange={setDeleteCommandMessage} label="Delete command messages" />
 
-        <Switch isSelected={onlyAllowCommandsInBotChannel} onChange={setOnlyAllowCommandsInBotChannel}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Only allow using commands in the bot channel
-          </Switch.Content>
-        </Switch>
+        <Switch checked={onlyAllowCommandsInBotChannel} onChange={setOnlyAllowCommandsInBotChannel} label="Only allow using commands in the bot channel" />
 
-        <TextField
-          value={commandPrefix}
-          onChange={(x) => setCommandPrefix(x)}
-          minLength={1}
-          maxLength={5}
-          validate={(x) => {
-            if (x.length < 1) return "The command prefix must be at least 1 letter";
-            if (x.length > 5) return "Command prefix is too long";
-            return true;
-          }}
-        >
+        <div className="field">
           <Label>Command Prefix</Label>
-          <Input type="text" />
-          <FieldError />
-        </TextField>
+          <Input
+            type="text"
+            value={commandPrefix}
+            onChange={(x) => setCommandPrefix(x)}
+            minLength={1}
+            maxLength={5}
+          />
+          {prefixError && <FieldError>{prefixError}</FieldError>}
+        </div>
 
-        <Button onClick={setSettings} isDisabled={commandPrefix.length < 1 || commandPrefix.length > 5}>Save</Button>
+        <Button onClick={setSettings} isDisabled={!!prefixError}>
+          Save
+        </Button>
       </div>
     </div>
   );

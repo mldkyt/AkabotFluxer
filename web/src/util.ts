@@ -1,4 +1,4 @@
-import { toast } from "@heroui/react";
+import { toast } from "./components/ui/index.ts";
 
 export async function request(method: "GET" | "POST" | "PATCH" | "DELETE", apiEndpoint: string, body?: any): Promise<
   | { ok: true; data: any }

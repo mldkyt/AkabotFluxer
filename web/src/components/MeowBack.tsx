@@ -1,6 +1,6 @@
-import { Button, Label, ListBox, Select, Surface, Switch, Typography } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
+import { Button, Card, Select, Switch } from "./ui/index.ts";
 
 const MeowBack = () => {
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
@@ -38,6 +38,8 @@ const MeowBack = () => {
   const [newMeowBackOwo, setNewMeowBackOwo] = useState(false);
 
   const createNewMeowBack = async () => {
+    if (!newMeowBackId) return;
+
     const res = await request("POST", "/api/meow-back", {
       channelId: newMeowBackId,
       meow: newMeowBackMeow,
@@ -132,174 +134,78 @@ const MeowBack = () => {
 
   return (
     <div>
-      <Typography type="h1">Meow back</Typography>
+      <h1>Meow back</h1>
 
-      <Surface className="flex flex-col gap-2 p-2 rounded-xl">
-        <Select
-          value={newMeowBackId}
-          onChange={(x) => setNewMeowBackId(x?.toString() ?? "null")}
-        >
-          <Label>Channel</Label>
-          <Select.Trigger>
-            <Select.Value />
-            <Select.Indicator />
-          </Select.Trigger>
-          <Select.Popover>
-            <ListBox>
-              {channels.map((channel) => (
-                <ListBox.Item key={channel.id} id={channel.id} textValue={channel.name}>
-                  #{channel.name}
-                  <ListBox.ItemIndicator />
-                </ListBox.Item>
-              ))}
-            </ListBox>
-          </Select.Popover>
+      <Card className="flex flex-col gap-2 p-2 my-2">
+        <Select value={newMeowBackId} onChange={setNewMeowBackId} label="Channel">
+          {channels.map((channel) => (
+            <option key={channel.id} value={channel.id}>
+              #{channel.name}
+            </option>
+          ))}
         </Select>
 
-        <Switch isSelected={newMeowBackMeow} onChange={setNewMeowBackMeow}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Meow in this channel
-          </Switch.Content>
-        </Switch>
+        <Switch checked={newMeowBackMeow} onChange={setNewMeowBackMeow} label="Meow in this channel" />
+        <Switch checked={newMeowBackWaf} onChange={setNewMeowBackWaf} label="Waf in this channel" />
+        <Switch checked={newMeowBackBark} onChange={setNewMeowBackBark} label="Bark in this channel" />
+        <Switch checked={newMeowBackColon3} onChange={setNewMeowBackColon3} label="Colon 3 in this channel" />
+        <Switch checked={newMeowBackOwo} onChange={setNewMeowBackOwo} label="Owo in this channel" />
+        <Switch checked={newMeowBackAwawa} onChange={setNewMeowBackAwawa} label="Awawa in this channel" />
 
-        <Switch isSelected={newMeowBackWaf} onChange={setNewMeowBackWaf}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Waf in this channel
-          </Switch.Content>
-        </Switch>
+        <Button onClick={createNewMeowBack} isDisabled={!newMeowBackId}>Add</Button>
+      </Card>
 
-        <Switch isSelected={newMeowBackBark} onChange={setNewMeowBackBark}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Bark in this channel
-          </Switch.Content>
-        </Switch>
-
-        <Switch isSelected={newMeowBackColon3} onChange={setNewMeowBackColon3}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Colon 3 in this channel
-          </Switch.Content>
-        </Switch>
-
-        <Switch isSelected={newMeowBackOwo} onChange={setNewMeowBackOwo}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Owo in this channel
-          </Switch.Content>
-        </Switch>
-
-        <Switch isSelected={newMeowBackAwawa} onChange={setNewMeowBackAwawa}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Awawa in this channel
-          </Switch.Content>
-        </Switch>
-
-        <Button onClick={createNewMeowBack}>Add</Button>
-      </Surface>
-
-      <Typography type="h2">Existing meow back settings</Typography>
+      <h2>Existing meow back settings</h2>
 
       {meowBackSettings.map((meowBackSetting) => (
-        <Surface key={meowBackSetting.channelId} className="flex flex-col gap-2 p-2 rounded-xl my-2">
-          <Typography type="h3">{`Channel #${meowBackSetting.channelName}`}</Typography>
+        <Card key={meowBackSetting.channelId} className="flex flex-col gap-2 p-2 my-2">
+          <h3>{`Channel #${meowBackSetting.channelName}`}</h3>
           <Switch
-            isSelected={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackMeow : meowBackSetting.meow}
-            onChange={(x) => setEditMeowBackMeow(x)}
-            isDisabled={meowBackSetting.channelId !== editMeowBackChannelId}
-          >
-            <Switch.Content>
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-              Meow in this channel
-            </Switch.Content>
-          </Switch>
+            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackMeow : meowBackSetting.meow}
+            onChange={setEditMeowBackMeow}
+            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+            label="Meow in this channel"
+          />
 
           <Switch
-            isSelected={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackWaf : meowBackSetting.waf}
-            onChange={(x) => setEditMeowBackWaf(x)}
-            isDisabled={meowBackSetting.channelId !== editMeowBackChannelId}
-          >
-            <Switch.Content>
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-              Waf in this channel
-            </Switch.Content>
-          </Switch>
+            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackWaf : meowBackSetting.waf}
+            onChange={setEditMeowBackWaf}
+            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+            label="Waf in this channel"
+          />
 
           <Switch
-            isSelected={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackBark : meowBackSetting.bark}
-            onChange={(x) => setEditMeowBackBark(x)}
-            isDisabled={meowBackSetting.channelId !== editMeowBackChannelId}
-          >
-            <Switch.Content>
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-              Bark in this channel
-            </Switch.Content>
-          </Switch>
+            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackBark : meowBackSetting.bark}
+            onChange={setEditMeowBackBark}
+            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+            label="Bark in this channel"
+          />
 
           <Switch
-            isSelected={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackColon3 : meowBackSetting.colon3}
-            onChange={(x) => setEditMeowBackColon3(x)}
-            isDisabled={meowBackSetting.channelId !== editMeowBackChannelId}
-          >
-            <Switch.Content>
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-              Colon 3 in this channel
-            </Switch.Content>
-          </Switch>
+            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackColon3 : meowBackSetting.colon3}
+            onChange={setEditMeowBackColon3}
+            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+            label="Colon 3 in this channel"
+          />
 
           <Switch
-            isSelected={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackOwo : meowBackSetting.owo}
-            onChange={(x) => setEditMeowBackOwo(x)}
-            isDisabled={meowBackSetting.channelId !== editMeowBackChannelId}
-          >
-            <Switch.Content>
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-              Owo in this channel
-            </Switch.Content>
-          </Switch>
+            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackOwo : meowBackSetting.owo}
+            onChange={setEditMeowBackOwo}
+            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+            label="Owo in this channel"
+          />
 
           <Switch
-            isSelected={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackAwawa : meowBackSetting.awawa}
-            onChange={(x) => setEditMeowBackAwawa(x)}
-            isDisabled={meowBackSetting.channelId !== editMeowBackChannelId}
-          >
-            <Switch.Content>
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-              Awawa in this channel
-            </Switch.Content>
-          </Switch>
+            checked={meowBackSetting.channelId === editMeowBackChannelId ? editMeowBackAwawa : meowBackSetting.awawa}
+            onChange={setEditMeowBackAwawa}
+            disabled={meowBackSetting.channelId !== editMeowBackChannelId}
+            label="Awawa in this channel"
+          />
 
           {editMeowBackChannelId !== meowBackSetting.channelId && <Button onClick={() => startEditing(meowBackSetting.channelId)} isDisabled={editMeowBackChannelId.length > 0}>Edit</Button>}
           {editMeowBackChannelId === meowBackSetting.channelId && <Button onClick={finishEditing}>Save</Button>}
           <Button variant="danger" onClick={async () => await deleteMeowBack(meowBackSetting.channelId)}>Delete</Button>
-        </Surface>
+        </Card>
       ))}
     </div>
   );

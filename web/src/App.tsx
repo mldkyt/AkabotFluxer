@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Button, Input, Surface, Toast, Typography } from "@heroui/react";
 import ChatRevive from "./components/ChatRevive.tsx";
 import ChatSummary from "./components/ChatSummary.tsx";
 import Home from "./components/Home.tsx";
@@ -10,6 +9,7 @@ import ServerSettings from "./components/ServerSettings.tsx";
 import Sidebar, { type PageKey } from "./components/Sidebar.tsx";
 import Verification from "./components/Verification.tsx";
 import WelcomeGoodbye from "./components/WelcomeGoodbye.tsx";
+import { Button, Card, Input, ToastContainer } from "./components/ui/index.ts";
 
 const App = () => {
   const [authorized, setAuthorized] = useState(false);
@@ -57,34 +57,33 @@ const App = () => {
 
   return (
     <div className="min-h-screen">
-      <Toast.Provider />
+      <ToastContainer />
       {!authorized ? (
         <div className="flex min-h-screen items-center justify-center p-4">
-          <Surface className="flex w-full max-w-sm flex-col gap-4 rounded-2xl p-8">
-            <Typography type="h1" className="text-center">
-              Akabot Admin
-            </Typography>
-            <Typography className="text-center">
+          <Card className="w-full max-w-sm flex flex-col gap-4 rounded-lg p-8">
+            <h1 className="text-center">Akabot Admin</h1>
+            <p className="text-center">
               Log in with the token from the settings command in Discord.
-            </Typography>
-            <Input
-              type="text"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              placeholder="Token"
-              disabled={authorizing}
-              className="w-full"
-            />
+            </p>
+            <div className="field">
+              <Input
+                type="text"
+                value={token}
+                onChange={(e) => setToken(e)}
+                placeholder="Token"
+                disabled={authorizing}
+                className="w-full"
+              />
+            </div>
             <Button
               onClick={() => handleLogin(token)}
-              variant="primary"
               isDisabled={authorizing || token.length === 0}
               className="w-full"
             >
               Log in
             </Button>
-            {authError && <Typography className="text-red-500">An error occurred: {authError}</Typography>}
-          </Surface>
+            {authError && <p className="field-error">An error occurred: {authError}</p>}
+          </Card>
         </div>
       ) : (
         <div className="flex">

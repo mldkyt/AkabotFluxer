@@ -1,6 +1,6 @@
-import { Button, Description, Input, Label, ListBox, NumberField, Select, Switch, TextField, Typography } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
+import { Button, Description, Input, Label, NumberField, Select, Switch } from "./ui/index.ts";
 
 const WelcomeGoodbye = () => {
   const [welcomeEnabled, setWelcomeEnabled] = useState(false);
@@ -75,159 +75,93 @@ const WelcomeGoodbye = () => {
 
   return (
     <>
-      <Typography type="h1">Welcome & Goodbye</Typography>
-      <Typography>Welcome new users and say goodbye to those who leave!</Typography>
+      <h1>Welcome & Goodbye</h1>
+      <p>Welcome new users and say goodbye to those who leave!</p>
 
       <div className="flex flex-col gap-2">
-        <Switch isSelected={welcomeEnabled} onChange={setWelcomeEnabled}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Welcome Messages
-          </Switch.Content>
-        </Switch>
+        <Switch checked={welcomeEnabled} onChange={setWelcomeEnabled} label="Welcome Messages" />
 
         {welcomeEnabled && (
           <>
-            <Select value={welcomeChannel} onChange={(x) => setWelcomeChannel(x?.toString() ?? "")}>
-              <Label>Welcome Channel</Label>
-              <Select.Trigger>
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover>
-                <ListBox>
-                  {channels.map((channel) => (
-                    <ListBox.Item key={channel.id} id={channel.id} textValue={`#${channel.name}`}>
-                      #{channel.name}
-                      <ListBox.ItemIndicator />
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
+            <Select value={welcomeChannel} onChange={setWelcomeChannel} label="Welcome Channel">
+              {channels.map((channel) => (
+                <option key={channel.id} value={channel.id}>
+                  #{channel.name}
+                </option>
+              ))}
             </Select>
 
-            <Select value={welcomeType} onChange={(x) => setWelcomeType((x?.toString() ?? "text") as "embed" | "text")}>
-              <Label>Welcome Message Type</Label>
-              <Select.Trigger>
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover>
-                <ListBox>
-                  <ListBox.Item id="embed" textValue="Embed">
-                    Embed
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
-                  <ListBox.Item id="text" textValue="Text">
-                    Text
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
-                </ListBox>
-              </Select.Popover>
+            <Select value={welcomeType} onChange={(x) => setWelcomeType(x as "embed" | "text")} label="Welcome Message Type">
+              <option value="embed">Embed</option>
+              <option value="text">Text</option>
             </Select>
 
             {welcomeType === "embed" && (
-              <TextField value={welcomeTitle} onChange={(title) => setWelcomeTitle(title)}>
+              <div className="field">
                 <Label>Welcome Embed Title</Label>
-                <Input type="text" min={1} max={50} />
-              </TextField>
+                <Input type="text" value={welcomeTitle} onChange={setWelcomeTitle} minLength={1} maxLength={50} />
+              </div>
             )}
 
-            <TextField value={welcomeContent} onChange={(content) => setWelcomeContent(content)}>
+            <div className="field">
               <Label>Welcome Message</Label>
-              <Input type="text" min={1} max={50} />
-            </TextField>
+              <Input type="text" value={welcomeContent} onChange={setWelcomeContent} minLength={1} maxLength={50} />
+            </div>
 
-            <NumberField value={welcomeFirstGracePeriod} onChange={(num) => setWelcomeFirstGracePeriod(num)} minValue={0} maxValue={60}>
-              <Label>First Grace Period</Label>
-              <NumberField.Group>
-                <NumberField.DecrementButton />
-                <NumberField.Input />
-                <NumberField.IncrementButton />
-              </NumberField.Group>
-              <Description>
-                The grace period in seconds between joining and before the welcome message is sent. You can set this to a higher value to prevent sending a welcome message when the member gets kicked
-                by a bot.
-              </Description>
-            </NumberField>
+            <NumberField
+              value={welcomeFirstGracePeriod}
+              onChange={setWelcomeFirstGracePeriod}
+              minValue={0}
+              maxValue={60}
+              label="First Grace Period"
+            />
+            <Description>
+              The grace period in seconds between joining and before the welcome message is sent. You can set this to a higher value to prevent sending a welcome message when the member gets
+              kicked by a bot.
+            </Description>
 
-            <NumberField value={welcomeSecondGracePeriod} onChange={(num) => setWelcomeSecondGracePeriod(num)} minValue={0} maxValue={600}>
-              <Label>Second Grace Period</Label>
-              <NumberField.Group>
-                <NumberField.DecrementButton />
-                <NumberField.Input />
-                <NumberField.IncrementButton />
-              </NumberField.Group>
-              <Description>
-                The grace period in seconds between the message being sent and before making the welcome message permanent. If the member leaves the server during this period, the welcome message is
-                deleted and the goodbye message is not created.
-              </Description>
-            </NumberField>
+            <NumberField
+              value={welcomeSecondGracePeriod}
+              onChange={setWelcomeSecondGracePeriod}
+              minValue={0}
+              maxValue={600}
+              label="Second Grace Period"
+            />
+            <Description>
+              The grace period in seconds between the message being sent and before making the welcome message permanent. If the member leaves the server during this period, the welcome message
+              is deleted and the goodbye message is not created.
+            </Description>
           </>
         )}
 
-        <Switch isSelected={goodbyeEnabled} onChange={setGoodbyeEnabled}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Goodbye Messages
-          </Switch.Content>
-        </Switch>
+        <Switch checked={goodbyeEnabled} onChange={setGoodbyeEnabled} label="Goodbye Messages" />
 
         {goodbyeEnabled && (
           <>
-            <Select value={goodbyeChannel} onChange={(x) => setGoodbyeChannel(x?.toString() ?? "")}>
-              <Label>Goodbye Channel</Label>
-              <Select.Trigger>
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover>
-                <ListBox>
-                  {channels.map((channel) => (
-                    <ListBox.Item key={channel.id} id={channel.id} textValue={`#${channel.name}`}>
-                      #{channel.name}
-                      <ListBox.ItemIndicator />
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
+            <Select value={goodbyeChannel} onChange={setGoodbyeChannel} label="Goodbye Channel">
+              {channels.map((channel) => (
+                <option key={channel.id} value={channel.id}>
+                  #{channel.name}
+                </option>
+              ))}
             </Select>
 
-            <Select value={goodbyeType} onChange={(x) => setGoodbyeType((x?.toString() ?? "text") as "embed" | "text")}>
-              <Label>Welcome Message Type</Label>
-              <Select.Trigger>
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover>
-                <ListBox>
-                  <ListBox.Item id="embed" textValue="Embed">
-                    Embed
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
-                  <ListBox.Item id="text" textValue="Text">
-                    Text
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
-                </ListBox>
-              </Select.Popover>
+            <Select value={goodbyeType} onChange={(x) => setGoodbyeType(x as "embed" | "text")} label="Welcome Message Type">
+              <option value="embed">Embed</option>
+              <option value="text">Text</option>
             </Select>
 
             {goodbyeType === "embed" && (
-              <TextField value={goodbyeTitle} onChange={(title) => setGoodbyeTitle(title)}>
+              <div className="field">
                 <Label>Goodbye Embed Title</Label>
-                <Input type="text" min={1} max={50} />
-              </TextField>
+                <Input type="text" value={goodbyeTitle} onChange={setGoodbyeTitle} minLength={1} maxLength={50} />
+              </div>
             )}
 
-            <TextField value={goodbyeContent} onChange={(content) => setGoodbyeContent(content)}>
+            <div className="field">
               <Label>Goodbye Message</Label>
-              <Input type="text" min={1} max={50} />
-            </TextField>
+              <Input type="text" value={goodbyeContent} onChange={setGoodbyeContent} minLength={1} maxLength={50} />
+            </div>
           </>
         )}
 

@@ -1,5 +1,3 @@
-import { Typography } from "@heroui/react/typography";
-
 export type PageKey =
   | "home"
   | "server-settings"
@@ -30,26 +28,27 @@ interface SidebarProps {
 
 const Sidebar = ({ page, onNavigate }: SidebarProps) => {
   return (
-    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col gap-1 overflow-y-auto border-r border-white/10 bg-black/20 p-4">
-      <div className="mb-4 px-3">
-        <Typography type="h2">Akabot</Typography>
+    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r overflow-y-auto"
+      style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-surface)" }}
+    >
+      <div className="sidebar-header">
+        <span className="sidebar-brand">Akabot</span>
       </div>
-      {NAV_ITEMS.map((item) => {
-        const active = item.key === page;
-        return (
-          <button
-            key={item.key}
-            onClick={() => onNavigate(item.key)}
-            className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-              active
-                ? "bg-white/15 font-medium text-white"
-                : "text-white/70 hover:bg-white/5 hover:text-white"
-            }`}
-          >
-            {item.label}
-          </button>
-        );
-      })}
+      <nav className="sidebar-nav">
+        <ul>
+          {NAV_ITEMS.map((item) => (
+            <li key={item.key}>
+              <button
+                type="button"
+                className={`nav-item ${item.key === page ? "active" : ""}`}
+                onClick={() => onNavigate(item.key)}
+              >
+                {item.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </aside>
   );
 };

@@ -1,6 +1,6 @@
-import { Button, Label, ListBox, Select, Surface, Table, toast, Typography } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { request } from "../util.ts";
+import { Button, Card, Select } from "./ui/index.ts";
 
 const RolesOnJoin = () => {
   const [rolesOnJoin, setRolesOnJoin] = useState<{ id: string; name: string }[]>([]);
@@ -25,7 +25,9 @@ const RolesOnJoin = () => {
   }, []);
 
   const addNewRole = async () => {
+    if (!addNewRoleId) return;
     const res = await request("POST", "/api/roles-on-join");
+
     if (!res.ok) return;
 
     const addedRole = roles.find((r) => r.id === addNewRoleId);
@@ -48,59 +50,42 @@ const RolesOnJoin = () => {
 
   return (
     <div>
-      <Typography type="h1">Roles on Join</Typography>
+      <h1>Roles on Join</h1>
 
-      <Surface className="p-2 flex flex-col gap-2 my-2 rounded-lg">
-        <Select
-          value={addNewRoleId}
-          variant="secondary"
-          onChange={(x) => setAddNewRoleId(x?.toString() ?? "")}
-        >
-          <Label>Role</Label>
-          <Select.Trigger>
-            <Select.Value />
-            <Select.Indicator />
-          </Select.Trigger>
-          <Select.Popover>
-            <ListBox>
-              {roles.map((role) => (
-                <ListBox.Item key={role.id} id={role.id} textValue={role.name}>
-                  <Typography>@{role.name}</Typography>
-                </ListBox.Item>
-              ))}
-            </ListBox>
-          </Select.Popover>
+      <Card className="flex flex-col gap-2 p-2 my-2">
+        <Select value={addNewRoleId} onChange={setAddNewRoleId} label="Role">
+          {roles.map((role) => (
+            <option key={role.id} value={role.id}>
+              @{role.name}
+            </option>
+          ))}
         </Select>
-        <Button onClick={addNewRole}>Add</Button>
-      </Surface>
+        <Button onClick={addNewRole} isDisabled={!addNewRoleId}>Add</Button>
+      </Card>
 
-      <Table>
-        <Table.ScrollContainer>
-          <Table.Content>
-            <Table.Header>
-              <Table.Column isRowHeader>Role</Table.Column>
-              <Table.Column>Actions</Table.Column>
-            </Table.Header>
-            <Table.Body>
-              {rolesOnJoin.map((role) => (
-                <Table.Row key={role.id}>
-                  <Table.Cell>
-                    {role.name}
-                  </Table.Cell>
-                  <Table.Cell className="flex gap-2">
-                    <Button
-                      variant="danger"
-                      onClick={() => deleteRole(role.id)}
-                    >
-                      Delete
-                    </Button>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Content>
-        </Table.ScrollContainer>
-      </Table>
+      <table>
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rolesOnJoin.map((role) => (
+            <tr key={role.id}>
+              <td>{role.name}</td>
+              <td className="flex gap-2">
+                <Button
+                  variant="danger"
+                  onClick={() => deleteRole(role.id)}
+                >
+                  Delete
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

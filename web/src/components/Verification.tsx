@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Description, Label, ListBox, Select, Skeleton, Switch, Typography } from "@heroui/react";
 import { request } from "../util.ts";
+import { Button, Description, Select, Skeleton, Switch } from "./ui/index.ts";
 
 const Verification = () => {
   const [loading, setLoading] = useState(true);
@@ -44,76 +44,47 @@ const Verification = () => {
   if (loading) {
     return (
       <div>
-        <Typography type="h1">!iam Roles</Typography>
+        <h1>!iam Roles</h1>
 
-        <Skeleton className="w-66 h-12 m-2 rounded-lg" />
-        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
-        <Skeleton className="w-full h-8 m-2 rounded-lg" />
-        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
-        <Skeleton className="w-full h-8 m-2 rounded-lg" />
-        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
-        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
-        <Skeleton className="w-full h-8 m-2 rounded-lg" />
-        <Skeleton className="w-full h-24 m-2 rounded-lg" />
+        <Skeleton className="w-full h-12 m-2" />
+        <Skeleton className="w-36 h-8 m-2" />
+        <Skeleton className="w-full h-8 m-2" />
+        <Skeleton className="w-36 h-8 m-2" />
+        <Skeleton className="w-full h-8 m-2" />
+        <Skeleton className="w-36 h-8 m-2" />
+        <Skeleton className="w-36 h-8 m-2" />
+        <Skeleton className="w-full h-8 m-2" />
+        <Skeleton className="w-full h-24 m-2" />
       </div>
     );
   }
 
   return (
     <div>
-      <Typography type="h1">Verification</Typography>
+      <h1>Verification</h1>
 
       <div className="flex flex-col gap-2 mt-4">
-        <Switch isSelected={enabled} onChange={setEnabled}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Enable verification
-          </Switch.Content>
-        </Switch>
+        <Switch checked={enabled} onChange={setEnabled} label="Enable verification" />
 
-        <Select
-          value={roleId}
-          onChange={(x) => setRoleId(x?.toString() ?? "")}
-        >
-          <Label>Verification Role</Label>
-          <Select.Trigger>
-            <Select.Value />
-            <Select.Indicator />
-          </Select.Trigger>
-          <Select.Popover>
-            <ListBox>
-              {roles.map((role) => (
-                <ListBox.Item key={role.id} id={role.id} textValue={role.name}>
-                  <Typography>@{role.name}</Typography>
-                </ListBox.Item>
-              ))}
-            </ListBox>
-          </Select.Popover>
-          <Description>Grant this role when verification is successful</Description>
+        <Select value={roleId} onChange={setRoleId} label="Verification Role">
+          {roles.map((role) => (
+            <option key={role.id} value={role.id}>
+              @{role.name}
+            </option>
+          ))}
         </Select>
+        <Description>Grant this role when verification is successful</Description>
 
-        <Select
-          value={channelId}
-          onChange={(x) => setChannelId(x?.toString() ?? "")}
-        >
-          <Label>Verification Channel</Label>
-          <Select.Trigger>
-            <Select.Value />
-            <Select.Indicator />
-          </Select.Trigger>
-          <Select.Popover>
-            <ListBox>
-              {channels.map((ch) => (
-                <ListBox.Item key={ch.id} id={ch.id} textValue={ch.name}>
-                  <Typography>#{ch.name}</Typography>
-                </ListBox.Item>
-              ))}
-            </ListBox>
-          </Select.Popover>
-          <Description>Use this channel for all transactional messages for verification (bot must have send messages permission in here)</Description>
+        <Select value={channelId} onChange={setChannelId} label="Verification Channel">
+          {channels.map((ch) => (
+            <option key={ch.id} value={ch.id}>
+              #{ch.name}
+            </option>
+          ))}
         </Select>
+        <Description>
+          Use this channel for all transactional messages for verification (bot must have send messages permission in here)
+        </Description>
 
         <Button onClick={saveData}>Save</Button>
       </div>

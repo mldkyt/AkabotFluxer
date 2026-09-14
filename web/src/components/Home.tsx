@@ -1,5 +1,5 @@
-import { Button, Surface, Typography } from "@heroui/react";
 import type { PageKey } from "./Sidebar.tsx";
+import { Button, Card } from "./ui/index.ts";
 
 interface HomeProps {
   onNavigate: (key: PageKey) => void;
@@ -19,18 +19,18 @@ const MODULES: { key: PageKey; title: string; description: string }[] = [
 const Home = ({ onNavigate }: HomeProps) => {
   return (
     <div>
-      <Typography type="h1">Welcome to Akabot</Typography>
-      <Typography>Admin panel for your Fluxer Discord bot. Pick a module from the sidebar to get started.</Typography>
+      <h1>Welcome to Akabot</h1>
+      <p>Admin panel for your Fluxer Discord bot. Pick a module from the sidebar to get started.</p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {MODULES.map((mod) => (
-          <Surface key={mod.key} className="flex flex-col gap-2 rounded-xl p-4">
-            <Typography type="h3">{mod.title}</Typography>
-            <Typography>{mod.description}</Typography>
+          <Card key={mod.key} hover className="flex flex-col gap-2 p-4">
+            <h3>{mod.title}</h3>
+            <p>{mod.description}</p>
             <Button className="mt-auto w-fit" variant="secondary" onClick={() => onNavigate(mod.key)}>
               Open
             </Button>
-          </Surface>
+          </Card>
         ))}
       </div>
     </div>

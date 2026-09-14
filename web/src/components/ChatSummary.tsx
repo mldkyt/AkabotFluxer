@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Label, ListBox, NumberField, Select, Skeleton, Switch, Table, toast, Typography } from "@heroui/react";
 import { request } from "../util.ts";
+import { Button, NumberField, Select, Skeleton, Switch } from "./ui/index.ts";
 
 const ChatSummary = () => {
   const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
@@ -42,6 +42,8 @@ const ChatSummary = () => {
   }, []);
 
   const addChannel = async () => {
+    if (!addChannelId) return;
+
     const res = await request("POST", "/api/chat-summary/channels", { channelId: addChannelId });
 
     if (res.ok) {
@@ -57,120 +59,79 @@ const ChatSummary = () => {
   if (loading) {
     return (
       <div>
-        <Typography type="h1">Chat Summary</Typography>
+        <h1>Chat Summary</h1>
 
-        <Skeleton className="w-66 h-12 m-2 rounded-lg" />
-        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
-        <Skeleton className="w-full h-8 m-2 rounded-lg" />
-        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
-        <Skeleton className="w-full h-8 m-2 rounded-lg" />
-        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
-        <Skeleton className="w-36 h-8 m-2 rounded-lg" />
-        <Skeleton className="w-full h-8 m-2 rounded-lg" />
-        <Skeleton className="w-full h-24 m-2 rounded-lg" />
+        <Skeleton className="w-full h-12 m-2" />
+        <Skeleton className="w-36 h-8 m-2" />
+        <Skeleton className="w-full h-8 m-2" />
+        <Skeleton className="w-36 h-8 m-2" />
+        <Skeleton className="w-full h-8 m-2" />
+        <Skeleton className="w-36 h-8 m-2" />
+        <Skeleton className="w-36 h-8 m-2" />
+        <Skeleton className="w-full h-8 m-2" />
+        <Skeleton className="w-full h-24 m-2" />
       </div>
     );
   }
 
   return (
     <div>
-      <Typography type="h1">Chat Summary</Typography>
+      <h1>Chat Summary</h1>
 
-      <Typography type="h2">Settings</Typography>
+      <h2>Settings</h2>
 
       <div className="flex flex-col gap-2">
-        <NumberField value={summariesRows} onChange={(x) => setSummariesRows(x)} minValue={3} maxValue={10}>
-          <Label>Chat summary row count</Label>
-          <NumberField.Group>
-            <NumberField.DecrementButton />
-            <NumberField.Input></NumberField.Input>
-            <NumberField.IncrementButton />
-          </NumberField.Group>
-        </NumberField>
+        <NumberField value={summariesRows} onChange={setSummariesRows} minValue={3} maxValue={10} label="Chat summary row count" />
 
-        <Switch isSelected={enableExtraSummaries} onChange={(x) => setEnableExtraSummaries(x)}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Enable monthly and yearly chat summaries
-          </Switch.Content>
-        </Switch>
+        <Switch checked={enableExtraSummaries} onChange={setEnableExtraSummaries} label="Enable monthly and yearly chat summaries" />
 
-        {enableExtraSummaries &&
-          (
-            <NumberField value={extraSummariesRows} onChange={(x) => setExtraSummariesRows(x)} minValue={3} maxValue={10}>
-              <Label>Monthly and yearly chat summary row count</Label>
-              <NumberField.Group>
-                <NumberField.DecrementButton />
-                <NumberField.Input></NumberField.Input>
-                <NumberField.IncrementButton />
-              </NumberField.Group>
-            </NumberField>
-          )}
+        {enableExtraSummaries && (
+          <NumberField value={extraSummariesRows} onChange={setExtraSummariesRows} minValue={3} maxValue={10} label="Monthly and yearly chat summary row count" />
+        )}
 
-        <Switch isSelected={countBots} onChange={(x) => setCountBots(x)}>
-          <Switch.Content>
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-            Count bots
-          </Switch.Content>
-        </Switch>
+        <Switch checked={countBots} onChange={setCountBots} label="Count bots" />
 
         <Button onClick={saveData}>Save</Button>
       </div>
 
-      <Typography type="h2">Channels</Typography>
+      <h2>Channels</h2>
       <div className="flex flex-col gap-2">
-        <Select value={addChannelId} onChange={(x) => setAddChannelId(x?.toString() ?? "")}>
-          <Label>Channel</Label>
-          <Select.Trigger>
-            <Select.Value />
-            <Select.Indicator />
-          </Select.Trigger>
-          <Select.Popover>
-            <ListBox>
-              {channels.map((channel) => (
-                <ListBox.Item key={channel.id} id={channel.id} textValue={`#${channel.name}`}>
-                  #{channel.name}
-                  <ListBox.ItemIndicator />
-                </ListBox.Item>
-              ))}
-            </ListBox>
-          </Select.Popover>
+        <Select value={addChannelId} onChange={setAddChannelId} label="Channel">
+          {channels.map((channel) => (
+            <option key={channel.id} value={channel.id}>
+              #{channel.name}
+            </option>
+          ))}
         </Select>
-        <Button onClick={addChannel}>Add channel</Button>
+        <Button onClick={addChannel} isDisabled={!addChannelId}>Add channel</Button>
       </div>
 
-      <Table className="mt-4">
-        <Table.ScrollContainer>
-          <Table.Content>
-            <Table.Header>
-              <Table.Column isRowHeader>Channel</Table.Column>
-              <Table.Column>Actions</Table.Column>
-            </Table.Header>
-            <Table.Body>
-              {chatSummaryChannels.map((chatSummaryChannel) => (
-                <Table.Row key={chatSummaryChannel}>
-                  <Table.Cell>
-                    #{channels.find((ch) => ch.id === chatSummaryChannel)?.name ??
-                      "Unknown channel"}
-                  </Table.Cell>
-                  <Table.Cell className="flex gap-2">
-                    <Button
-                      variant="danger"
-                      onClick={() => remChannel(chatSummaryChannel)}
-                    >
-                      Delete
-                    </Button>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Content>
-        </Table.ScrollContainer>
-      </Table>
+      <table className="mt-4">
+        <thead>
+          <tr>
+            <th>Channel</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {chatSummaryChannels.map((chatSummaryChannel) => (
+            <tr key={chatSummaryChannel}>
+              <td>
+                #{channels.find((ch) => ch.id === chatSummaryChannel)?.name ??
+                  "Unknown channel"}
+              </td>
+              <td className="flex gap-2">
+                <Button
+                  variant="danger"
+                  onClick={() => remChannel(chatSummaryChannel)}
+                >
+                  Delete
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
