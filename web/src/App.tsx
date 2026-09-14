@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ChatRevive from "./components/ChatRevive.tsx";
 import ChatSummary from "./components/ChatSummary.tsx";
+import Counting from "./components/Counting.tsx";
 import MeowBack from "./components/MeowBack.tsx";
 import ReactionRoles from "./components/ReactionRoles.tsx";
 import RolesOnJoin from "./components/RolesOnJoin.tsx";
@@ -57,45 +58,48 @@ const App = () => {
   return (
     <div className="min-h-screen">
       <ToastContainer />
-      {!authorized ? (
-        <div className="flex min-h-screen items-center justify-center p-4">
-          <div className="flex w-full max-w-sm flex-col gap-4">
-            <h2 className="text-center">Akabot Admin</h2>
-            <Input
-              type="text"
-              value={token}
-              onChange={(e) => setToken(e)}
-              placeholder="Token"
-              disabled={authorizing}
-              className="w-full"
-            />
-            <Button
-              onClick={() => handleLogin(token)}
-              isDisabled={authorizing || token.length === 0}
-              className="w-full"
-            >
-              Log in
-            </Button>
-            {authError && <span className="field-error">An error occurred: {authError}</span>}
-          </div>
-        </div>
-      ) : (
-        <div className="flex">
-          <Sidebar page={page} onNavigate={setPage} />
-          <main className="flex-1 px-8 py-6">
-            <div className="mx-auto max-w-4xl">
-              {page === "server-settings" && <ServerSettings />}
-              {page === "reaction-roles" && <ReactionRoles />}
-              {page === "welcome-goodbye" && <WelcomeGoodbye />}
-              {page === "chat-summary" && <ChatSummary />}
-              {page === "roles-on-join" && <RolesOnJoin />}
-              {page === "verification" && <Verification />}
-              {page === "meow-back" && <MeowBack />}
-              {page === "chat-revive" && <ChatRevive />}
+      {!authorized
+        ? (
+          <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="flex w-full max-w-sm flex-col gap-4">
+              <h2 className="text-center">Akabot Admin</h2>
+              <Input
+                type="text"
+                value={token}
+                onChange={(e) => setToken(e)}
+                placeholder="Token"
+                disabled={authorizing}
+                className="w-full"
+              />
+              <Button
+                onClick={() => handleLogin(token)}
+                isDisabled={authorizing || token.length === 0}
+                className="w-full"
+              >
+                Log in
+              </Button>
+              {authError && <span className="field-error">An error occurred: {authError}</span>}
             </div>
-          </main>
-        </div>
-      )}
+          </div>
+        )
+        : (
+          <div className="flex">
+            <Sidebar page={page} onNavigate={setPage} />
+            <main className="flex-1 px-8 py-6">
+              <div className="mx-auto max-w-4xl">
+                {page === "server-settings" && <ServerSettings />}
+                {page === "reaction-roles" && <ReactionRoles />}
+                {page === "welcome-goodbye" && <WelcomeGoodbye />}
+                {page === "chat-summary" && <ChatSummary />}
+                {page === "roles-on-join" && <RolesOnJoin />}
+                {page === "verification" && <Verification />}
+                {page === "meow-back" && <MeowBack />}
+                {page === "chat-revive" && <ChatRevive />}
+                {page === "counting" && <Counting />}
+              </div>
+            </main>
+          </div>
+        )}
     </div>
   );
 };

@@ -6,7 +6,8 @@ export type PageKey =
   | "roles-on-join"
   | "verification"
   | "meow-back"
-  | "chat-revive";
+  | "chat-revive"
+  | "counting";
 
 export const NAV_ITEMS: { key: PageKey; label: string }[] = [
   { key: "server-settings", label: "Server Settings" },
@@ -17,6 +18,7 @@ export const NAV_ITEMS: { key: PageKey; label: string }[] = [
   { key: "verification", label: "Verification" },
   { key: "meow-back", label: "Meow Back" },
   { key: "chat-revive", label: "Chat Revive" },
+  { key: "counting", label: "Counting" },
 ];
 
 interface SidebarProps {
@@ -26,9 +28,7 @@ interface SidebarProps {
 
 const Sidebar = ({ page, onNavigate }: SidebarProps) => {
   return (
-    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r overflow-y-auto"
-      style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-surface)" }}
-    >
+    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r overflow-y-auto" style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-surface)" }}>
       <div className="sidebar-header">
         <span className="sidebar-brand">Akabot</span>
       </div>

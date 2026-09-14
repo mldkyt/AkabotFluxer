@@ -205,3 +205,22 @@ model ChatReviveState {
   lastMessageAt DateTime @default(now())
   reviveSent    Boolean  @default(false)
 }
+
+model CountingSettings {
+  guildId         String
+  channelId       String
+  anyCount        Boolean @default(false)
+  wordCount       Boolean @default(false)
+  totalWordCount  Boolean @default(false)
+  resetOnSameUser Boolean @default(true)
+  failOnEdit      Boolean @default(true)
+
+  @@id([guildId, channelId])
+}
+
+model CountingState {
+  channelId     String  @id
+  count         Int     @default(0)
+  lastUserId    String  @default("")
+  lastMessageId String  @default("")
+}
