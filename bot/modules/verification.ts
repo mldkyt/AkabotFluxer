@@ -131,7 +131,10 @@ export async function webRequest(client: Client, req: Request, url: URL) {
         update: {},
       });
 
-      return new Response(JSON.stringify(verificationSettings));
+      return new Response(
+        JSON.stringify(verificationSettings),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      );
     }
 
     if (req.method === "POST") {

@@ -84,11 +84,18 @@ export async function webRequest(client: Client, req: Request, url: URL) {
         },
       });
 
-      return new Response(JSON.stringify(iamRoles.map((x) => ({
-        roleId: x.roleId,
-        roleName: guild.roles.find((r) => r.id === x.roleId)?.name ?? "Unknown role",
-        tag: x.tag,
-      }))));
+      return new Response(
+        JSON.stringify(
+          iamRoles.map((x) => ({
+            roleId: x.roleId,
+            roleName: guild.roles.find((r) => r.id === x.roleId)?.name ?? "Unknown role",
+            tag: x.tag,
+          })),
+        ),
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     } else if (req.method === "POST") {
       const postBodySchema = z.object({
         roleId: z.string().nonempty(),
@@ -123,10 +130,13 @@ export async function webRequest(client: Client, req: Request, url: URL) {
         },
       });
 
-      return new Response(JSON.stringify({
-        roleId: iamRole.roleId,
-        tag: iamRole.tag,
-      }));
+      return new Response(
+        JSON.stringify({
+          roleId: iamRole.roleId,
+          tag: iamRole.tag,
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      );
     } else if (req.method === "PATCH") {
       const patchBodySchema = z.object({
         roleId: z.string().optional(),
