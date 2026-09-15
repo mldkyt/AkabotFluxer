@@ -263,3 +263,65 @@ model LevelingMultipliers {
   endMonth   Int
   endDay     Int
 }
+
+model AntiRaidSettings {
+  guildId     String @id
+  logChannelId String  @default("")
+
+  capsEnabled          Boolean @default(false)
+  capsPercent          Int     @default(80)
+  capsMinLength        Int     @default(10)
+  capsAction           String  @default("log")
+  capsTimeoutSeconds   Int     @default(60)
+  capsDeleteMessages   Boolean @default(false)
+  capsDmMember         Boolean @default(false)
+
+  duplicateEnabled        Boolean @default(false)
+  duplicateThreshold      Int     @default(3)
+  duplicateWindow         Int     @default(30)
+  duplicateAction         String  @default("log")
+  duplicateTimeoutSeconds Int     @default(60)
+  duplicateDeleteMessages Boolean @default(false)
+  duplicateDmMember       Boolean @default(false)
+
+  emojiEnabled          Boolean @default(false)
+  emojiCount            Int     @default(5)
+  emojiWindow           Int     @default(30)
+  emojiCustomEmojis     Boolean @default(false)
+  emojiAction           String  @default("log")
+  emojiTimeoutSeconds   Int     @default(60)
+  emojiDeleteMessages   Boolean @default(false)
+  emojiDmMember         Boolean @default(false)
+
+  spamEnabled          Boolean @default(false)
+  spamMessages         Int     @default(5)
+  spamPer              Int     @default(10)
+  spamAction           String  @default("log")
+  spamTimeoutSeconds   Int     @default(60)
+  spamDeleteMessages   Boolean @default(false)
+  spamDmMember         Boolean @default(false)
+
+  inviteEnabled          Boolean @default(false)
+  inviteThreshold        Int     @default(2)
+  inviteWindow           Int     @default(60)
+  inviteAction           String  @default("log")
+  inviteTimeoutSeconds   Int     @default(60)
+  inviteDeleteMessages   Boolean @default(false)
+  inviteDmMember         Boolean @default(false)
+
+  joinBurstEnabled          Boolean @default(false)
+  joinBurstMembers          Int     @default(5)
+  joinBurstWindow           Int     @default(30)
+  joinBurstAction           String  @default("log")
+  joinBurstTimeoutSeconds   Int     @default(60)
+  joinBurstDeleteMessages   Boolean @default(false)
+  joinBurstDmMember         Boolean @default(false)
+
+  mentionEnabled          Boolean @default(false)
+  mentionCount            Int     @default(5)
+  mentionWindow           Int     @default(30)
+  mentionAction           String  @default("log")
+  mentionTimeoutSeconds   Int     @default(60)
+  mentionDeleteMessages   Boolean @default(false)
+  mentionDmMember         Boolean @default(false)
+}

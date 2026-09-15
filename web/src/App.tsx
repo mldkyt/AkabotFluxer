@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import AntiRaid from "./components/AntiRaid.tsx";
 import ChatRevive from "./components/ChatRevive.tsx";
 import ChatSummary from "./components/ChatSummary.tsx";
 import Counting from "./components/Counting.tsx";
@@ -97,6 +98,7 @@ const App = () => {
                 {page === "meow-back" && <MeowBack />}
                 {page === "chat-revive" && <ChatRevive />}
                 {page === "counting" && <Counting />}
+                {page === "anti-raid" && <AntiRaid />}
                 {page === "leveling" && <Leveling />}
               </div>
             </main>

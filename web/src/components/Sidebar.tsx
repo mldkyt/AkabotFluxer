@@ -8,6 +8,7 @@ export type PageKey =
   | "meow-back"
   | "chat-revive"
   | "counting"
+  | "anti-raid"
   | "leveling";
 
 export const NAV_ITEMS: { key: PageKey; label: string }[] = [
@@ -20,6 +21,7 @@ export const NAV_ITEMS: { key: PageKey; label: string }[] = [
   { key: "meow-back", label: "Meow Back" },
   { key: "chat-revive", label: "Chat Revive" },
   { key: "counting", label: "Counting" },
+  { key: "anti-raid", label: "Anti-Raid" },
   { key: "leveling", label: "Leveling" },
 ];
 
