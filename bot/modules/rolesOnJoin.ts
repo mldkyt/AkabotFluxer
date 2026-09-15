@@ -25,12 +25,10 @@ async function onRoleDelete(role: {
   guild_id: string;
   role_id: string;
 }) {
-  await prisma.rolesOnJoin.delete({
+  await prisma.rolesOnJoin.deleteMany({
     where: {
-      guildId_roleId: {
-        guildId: role.guild_id,
-        roleId: role.role_id,
-      },
+      guildId: role.guild_id,
+      roleId: role.role_id,
     },
   });
 }
@@ -98,12 +96,10 @@ export async function webRequest(client: Client, req: Request, url: URL) {
         return new Response(`Could not parse client payload`, { status: 400 });
       }
 
-      await prisma.rolesOnJoin.delete({
+      await prisma.rolesOnJoin.deleteMany({
         where: {
-          guildId_roleId: {
-            guildId,
-            roleId: validated.data.roleId,
-          },
+          guildId,
+          roleId: validated.data.roleId,
         },
       });
 
