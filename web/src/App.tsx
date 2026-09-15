@@ -4,6 +4,7 @@ import ChatRevive from "./components/ChatRevive.tsx";
 import ChatSummary from "./components/ChatSummary.tsx";
 import Counting from "./components/Counting.tsx";
 import Leveling from "./components/Leveling.tsx";
+import Logging from "./components/Logging.tsx";
 import MeowBack from "./components/MeowBack.tsx";
 import ReactionRoles from "./components/ReactionRoles.tsx";
 import RolesOnJoin from "./components/RolesOnJoin.tsx";
@@ -99,6 +100,7 @@ const App = () => {
                 {page === "chat-revive" && <ChatRevive />}
                 {page === "counting" && <Counting />}
                 {page === "anti-raid" && <AntiRaid />}
+                {page === "logging" && <Logging />}
                 {page === "leveling" && <Leveling />}
               </div>
             </main>

@@ -9,6 +9,7 @@ export type PageKey =
   | "chat-revive"
   | "counting"
   | "anti-raid"
+  | "logging"
   | "leveling";
 
 export const NAV_ITEMS: { key: PageKey; label: string }[] = [
@@ -22,6 +23,7 @@ export const NAV_ITEMS: { key: PageKey; label: string }[] = [
   { key: "chat-revive", label: "Chat Revive" },
   { key: "counting", label: "Counting" },
   { key: "anti-raid", label: "Anti-Raid" },
+  { key: "logging", label: "Logging" },
   { key: "leveling", label: "Leveling" },
 ];
 

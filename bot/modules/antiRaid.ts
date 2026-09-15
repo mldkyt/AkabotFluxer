@@ -1,12 +1,11 @@
-import { Client, EmbedBuilder, Guild, GuildChannel, GuildMember, Message, PermissionFlags, TextChannel } from "@fluxerjs/core";
+import { Client, EmbedBuilder, Guild, GuildMember, Message, PermissionFlags, TextChannel } from "@fluxerjs/core";
 import { prisma } from "../src/database.ts";
 import { authorizeRequest } from "../src/web.ts";
-import { getBotChannel } from "../src/serverSettings.ts";
+import { logEvent } from "./logging.ts";
 import z from "zod";
 
 type AntiRaidSettings = {
   guildId: string;
-  logChannelId: string;
 
   capsEnabled: boolean;
   capsPercent: number;
@@ -230,16 +229,6 @@ async function dmMember(member: GuildMember, detector: string) {
   }).catch(() => {});
 }
 
-async function sendLogMessage(guild: Guild, settings: AntiRaidSettings, embed: EmbedBuilder) {
-  let channel: GuildChannel | null = null;
-  if (settings.logChannelId) {
-    channel = guild.channels.find((channel) => channel.id === settings.logChannelId) ?? null;
-  }
-  if (!channel) channel = await getBotChannel(guild);
-  if (!channel) return;
-  await channel.send({ embeds: [embed] }).catch(() => {});
-}
-
 async function runAction({ guild, member, settings, detector, action, timeoutSeconds, deleteMessages: shouldDelete, dmMember: shouldDm, records }: ActionOptions, msg: Message | null) {
   const cooldownKey = `${guild.id}:${member.id}:${action}:${detector}`;
   const now = Date.now();
@@ -268,7 +257,7 @@ async function runAction({ guild, member, settings, detector, action, timeoutSec
       break;
   }
 
-  await sendLogMessage(guild, settings, embed);
+  await logEvent(guild, "antiRaid", embed);
 }
 
 async function handleMessage(msg: Message) {
@@ -404,8 +393,6 @@ export function setup(client: Client) {
 }
 
 const settingsSchema = z.object({
-  logChannelId: z.string(),
-
   capsEnabled: z.boolean(),
   capsPercent: z.number().int().min(0).max(100),
   capsMinLength: z.number().int().min(1),
@@ -488,10 +475,6 @@ export async function webRequest(client: Client, req: Request, url: URL) {
     if (!validated.success) return new Response(`Invalid payload`, { status: 400 });
 
     const data = { ...validated.data, guildId };
-    if (data.logChannelId) {
-      const channel = guild.channels.filter((channel) => channel.type === 0).find((channel) => channel.id === data.logChannelId);
-      if (!channel) return new Response(`Channel was not found`, { status: 400 });
-    }
 
     await prisma.antiRaidSettings.upsert({
       where: { guildId },

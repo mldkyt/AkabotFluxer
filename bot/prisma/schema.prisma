@@ -264,9 +264,45 @@ model LevelingMultipliers {
   endDay     Int
 }
 
+model LoggingSettings {
+  id       Int    @id @default(autoincrement())
+  guildId  String
+  channelId String
+
+  roleCreate        Boolean @default(false)
+  roleUpdate        Boolean @default(false)
+  roleDelete        Boolean @default(false)
+  channelCreate     Boolean @default(false)
+  channelUpdate     Boolean @default(false)
+  channelDelete     Boolean @default(false)
+  guildUpdate       Boolean @default(false)
+  memberJoin        Boolean @default(false)
+  memberLeave       Boolean @default(false)
+  voiceJoin         Boolean @default(false)
+  voiceLeave        Boolean @default(false)
+  voiceMove         Boolean @default(false)
+  voiceServerDeafen Boolean @default(false)
+  voiceServerMute   Boolean @default(false)
+  antiRaid          Boolean @default(false)
+  emojiCreate       Boolean @default(false)
+  emojiUpdate       Boolean @default(false)
+  emojiDelete       Boolean @default(false)
+  stickerCreate     Boolean @default(false)
+  stickerUpdate     Boolean @default(false)
+  stickerDelete     Boolean @default(false)
+  webhookCreate     Boolean @default(false)
+  webhookUpdate     Boolean @default(false)
+  webhookDelete     Boolean @default(false)
+  memberBan         Boolean @default(false)
+  memberUnban       Boolean @default(false)
+  memberKick        Boolean @default(false)
+  memberTimeout     Boolean @default(false)
+
+  @@unique([guildId, channelId])
+}
+
 model AntiRaidSettings {
   guildId     String @id
-  logChannelId String  @default("")
 
   capsEnabled          Boolean @default(false)
   capsPercent          Int     @default(80)
