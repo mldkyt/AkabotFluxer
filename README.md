@@ -1,5 +1,8 @@
 # Akabot for Fluxer
 
+> [!WARNING]
+> Akabot for Fluxer was deprecated on 2026-10-1 and shut down.
+
 Here lies the development efforts for Akabot for Fluxer.
 
 ## Directory structure
